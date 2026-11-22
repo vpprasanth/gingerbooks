@@ -21,4 +21,7 @@ Offline operations app for a small ginger candy manufacturer. It is a single HTM
 ## Data
 Entries are stored in the browser's IndexedDB on the device in use; the HTML file holds no data. Back up from Settings & backup, either with a manual download or an automatic backup file. See `docs/Owner-Guide.html`.
 
+## Cloud sync (optional)
+Settings & backup → Cloud sync. Signing in with the same email and password on the laptop file and on the website gives every device the same books. Sync runs through a Supabase project: one `books` row per user, row-level security, version-checked updates (see `supabase-setup.sql`). The app contains only the project URL and the public anon key; public sign-ups are off, so accounts are created by the project owner. Entries save locally first and upload when online.
+
 `index.html` is a copy of `GingerBooks.html`, so GitHub Pages can serve the app if it is enabled.

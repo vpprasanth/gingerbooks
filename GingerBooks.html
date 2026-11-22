@@ -133,7 +133,7 @@ function blank(){return{version:1,settings:{name:'',address:'',gstin:'',state:''
 function idb(){return new Promise((res,rej)=>{const r=indexedDB.open(DBNAME,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function idbGet(k){const db=await idb();return new Promise((res,rej)=>{const q=db.transaction(STORE).objectStore(STORE).get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
 async function idbPut(k,v){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(v,k);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
-async function persist(){const data=JSON.stringify(S);try{await idbPut('state',data)}catch(e){try{localStorage.setItem(DBNAME,data)}catch(e2){toast('Could not save! Download a backup now.',8000)}}
+async function persist(){const data=JSON.stringify(S);if(typeof syncAfterCommit==='function'&&syncOn())syncAfterCommit();try{await idbPut('state',data)}catch(e){try{localStorage.setItem(DBNAME,data)}catch(e2){toast('Could not save! Download a backup now.',8000)}}
  clearTimeout(persist.t);persist.t=setTimeout(writeFH,1500)}
 function commit(msg){persist();render();if(msg)toast(msg)}
 async function writeFH(){if(!FH)return;try{if((await FH.queryPermission({mode:'readwrite'}))!=='granted'){AUTO_NEEDS=true;return}
@@ -231,7 +231,7 @@ function writeOff(id){const b=byId(S.batches,id);const q=stock().b[id]||0;if(q<=
 const PAGES=[['dash','🏠','Dashboard'],['sales','🧾','Sales invoices'],['orders','📋','Orders / backlog'],['purchases','🛒','Purchases'],['production','🏭','Production'],['returns','↩️','Returns'],['payments','💰','Payments & dues'],['bank','🏦','Bank statement'],['expenses','💸','Expenses (OpEx/CapEx)'],0,['stock','📦','Stock & batches'],['alerts','🔔','Alerts'],['demand','⚖️','Demand vs supply'],['reports','📊','GST & reports'],['profit','📈','Profit & break-even'],0,['items','🍬','Products'],['customers','👥','Customers'],['suppliers','🚚','Suppliers (goods)'],['vendors','🧰','Vendors (services)'],['parties','🔎','Party analysis'],0,['settings','⚙️','Settings & backup']];
 let PAGE='dash',D=null,TAB={};
 function go(p){PAGE=p;D=null;render();window.scrollTo(0,0)}
-function nav(){const n=alerts().filter(a=>a.lvl!=='grey').length;document.getElementById('nav').innerHTML=`${S.settings.logo?`<div style="background:#fff;border-radius:8px;padding:6px;margin:2px 6px 8px"><img src="${S.settings.logo}" alt="logo" style="display:block;max-width:100%;max-height:60px;margin:auto"></div>`:''}<div class="brand">🫚 GingerBooks</div><div class="biz">${esc(S.settings.name||'Set up your business')}</div>`+
+function nav(){const n=alerts().filter(a=>a.lvl!=='grey').length;document.getElementById('nav').innerHTML=`${S.settings.logo?`<div style="background:#fff;border-radius:8px;padding:6px;margin:2px 6px 8px"><img src="${S.settings.logo}" alt="logo" style="display:block;max-width:100%;max-height:60px;margin:auto"></div>`:''}<div class="brand">🫚 GingerBooks</div><div class="biz">${esc(S.settings.name||'Set up your business')}</div>${syncPill()}`+
  PAGES.map(p=>p?`<a class="${PAGE===p[0]?'on':''}" onclick="go('${p[0]}')"><span>${p[1]}</span>${p[2]}${p[0]==='alerts'&&n?`<span class="badge">${n}</span>`:''}</a>`:'<div class="sep"></div>').join('')}
 function render(){STK=null;nav();document.getElementById('main').innerHTML=(R[PAGE]||R.dash)()}
 const R={};
@@ -553,6 +553,7 @@ R.settings=()=>{const s=S.settings;const f=(k,l,t)=>`<div><label>${l}</label>${t
  <div class="f">${f('expiryWarnDays','Warn before expiry (days)','number')}${f('b2clLimit','B2C large invoice limit (₹)','number')}${f('backupDays','Remind to back up every (days)','number')}${f('monthTarget','Monthly sales target (₹, with GST)','number')}</div>
  <div><label>Company logo (printed on invoices)</label><div class="row">${s.logo?`<img src="${s.logo}" alt="logo" style="max-height:56px;max-width:220px;border:1px solid var(--line);border-radius:6px;padding:4px;background:#fff">`:'<span class="mut">No logo</span>'}<label class="btn s o" style="margin:2px">Upload logo<input type="file" accept="image/*" style="display:none" onchange="setLogo(this.files[0])"></label>${s.logo?'<button class="btn s o" onclick="S.settings.logo=\'\';commit()">Remove</button>':''}</div></div>
  <div class="mut" style="font-size:13px">Changes save automatically.</div></div>
+${syncSection()}
  <div class="card"><h2>Backup (important)</h2><p>Your data is stored only inside this browser on this computer. Clearing browser data or changing computers will lose it unless you keep a backup file.</p>
  <div class="row"><button class="btn" onclick="backupNow()">⬇ Download backup now</button><label class="btn o" style="margin:2px">⬆ Restore from backup<input type="file" accept=".json" style="display:none" onchange="restore(this.files[0])"></label><span class="mut">Last download: ${lb}</span></div>
  ${fs?`<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px"><b>Automatic backup file</b> <span class="mut">(Chrome / Edge)</span><br>
@@ -817,6 +818,50 @@ function payMix(a,b){const m={};for(const r of liveRcp().filter(r=>r.date>=a&&r.
 function trendSpikes(){const t=today();const q3=itemQtySold(addDays(t,-2),t),q30=itemQtySold(addDays(t,-32),addDays(t,-3));const out={};for(const id in q3){const a3=q3[id]/3,a30=(q30[id]||0)/30;if(q3[id]>=6&&a30>0&&a3>=1.5*a30)out[id]=r2(a3/a30)}return out}
 function belowCost(){const t=today(),out=[];for(const s of salesBetween(addDays(t,-6),t))for(const l of s.lines){const net=l.qty?l.taxable/l.qty:0;const c=l.cost??unitCostNow(l.itemId);if(c&&net<c)out.push({s,l,net,c})}return out}
 
+/* ================= CLOUD SYNC (Supabase, optional) =================
+   One row per login in table `books` holds the whole data set. Version numbers stop two devices overwriting each other. */
+const SYNC_DEFAULT={url:'https://stthvomuucfkovluezwq.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0dGh2b211dWNma292bHVlendxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUzNTUzNjAsImV4cCI6MjExMDkzMTM2MH0.Zujq53bAnSaF7NdMCEetcY9YOdlHklxjFk9l-cG_DE8'};
+const SY={cfg:(c=>(c&&c.url&&c.key)?c:{...SYNC_DEFAULT})(JSON.parse(localStorage.getItem(DBNAME+'-sync-cfg')||'null')),sess:JSON.parse(localStorage.getItem(DBNAME+'-sync-sess')||'null'),status:'off',msg:'',busy:false,timer:null};
+const syncOn=()=>!!(SY.cfg.url&&SY.cfg.key&&SY.sess);
+function sySave(){localStorage.setItem(DBNAME+'-sync-cfg',JSON.stringify(SY.cfg));localStorage.setItem(DBNAME+'-sync-sess',JSON.stringify(SY.sess))}
+const syDirty=v=>{if(v===undefined)return localStorage.getItem(DBNAME+'-sync-dirty')==='1';localStorage.setItem(DBNAME+'-sync-dirty',v?'1':'0')};
+const syBase=v=>{if(v===undefined)return +(localStorage.getItem(DBNAME+'-sync-ver')||0);localStorage.setItem(DBNAME+'-sync-ver',String(v))};
+async function syAuth(path,body){const r=await fetch(SY.cfg.url.replace(/\/$/,'')+'/auth/v1/'+path,{method:'POST',headers:{apikey:SY.cfg.key,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error_description||j.msg||j.message||('Sign-in failed ('+r.status+')'));return j}
+function sySetSess(j){SY.sess={access:j.access_token,refresh:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000-60000,uid:j.user&&j.user.id,email:j.user&&j.user.email};sySave()}
+async function syToken(){if(!SY.sess)throw new Error('Not signed in');if(Date.now()>SY.sess.exp){try{sySetSess(await syAuth('token?grant_type=refresh_token',{refresh_token:SY.sess.refresh}))}catch(e){SY.sess=null;sySave();throw new Error('Session expired. Please sign in again.')}}return SY.sess.access}
+async function syRest(method,q,body,extra){const tok=await syToken();const r=await fetch(SY.cfg.url.replace(/\/$/,'')+'/rest/v1/'+q,{method,headers:{apikey:SY.cfg.key,Authorization:'Bearer '+tok,'Content-Type':'application/json',Prefer:'return=representation',...(extra||{})},body:body?JSON.stringify(body):undefined});const t=await r.text();if(!r.ok)throw new Error('Cloud error '+r.status+': '+t.slice(0,160));return t?JSON.parse(t):null}
+function syState(st,msg){SY.status=st;SY.msg=msg||'';const el=document.getElementById('syncpill');if(el)el.outerHTML=syncPill()}
+function syncPill(){if(!syncOn())return '<span id="syncpill"></span>';const m={ok:['☁ Synced','#1e8449'],busy:['☁ Syncing…','#bba893'],dirty:['☁ Waiting to sync','#d68910'],offline:['☁ Offline, will sync','#d68910'],error:['☁ Sync problem','#c0392b'],conflict:['☁ Needs your choice','#c0392b']}[SY.status]||['☁ Sync','#bba893'];return `<a id="syncpill" onclick="go('settings')" title="${esc(SY.msg)}" style="color:${m[1]};font-size:12px;padding:2px 10px 10px;display:block">${m[0]}</a>`}
+async function syncPush(){if(!syncOn()||SY.busy)return;if(!navigator.onLine){syState('offline');return}SY.busy=true;syState('busy');
+ try{const base=syBase();const data=JSON.parse(JSON.stringify(S));let rows;
+  if(base===0){const ex=await syRest('GET','books?select=version&user_id=eq.'+SY.sess.uid);if(ex&&ex.length){SY.busy=false;return syConflict(ex[0].version)}rows=await syRest('POST','books',{user_id:SY.sess.uid,data,version:1,updated_at:new Date().toISOString()})}
+  else rows=await syRest('PATCH','books?user_id=eq.'+SY.sess.uid+'&version=eq.'+base,{data,version:base+1,updated_at:new Date().toISOString()});
+  if(!rows||!rows.length){const r=await syRest('GET','books?select=version&user_id=eq.'+SY.sess.uid);SY.busy=false;return syConflict(r&&r[0]?r[0].version:0)}
+  syBase(rows[0].version);syDirty(false);syState('ok','Last synced '+new Date().toLocaleTimeString('en-IN'))}catch(e){syState(navigator.onLine?'error':'offline',e.message)}SY.busy=false}
+async function syncPull(force){if(!syncOn()||SY.busy||!navigator.onLine)return;try{const r=await syRest('GET','books?select=version&user_id=eq.'+SY.sess.uid);if(!r||!r.length){if(syDirty()||force)syncPush();return}
+  const rv=r[0].version;if(rv===syBase()){if(syDirty())syncPush();else syState('ok','Up to date');return}
+  if(rv>syBase()){if(syDirty())return syConflict(rv);await syTakeCloud()}}catch(e){syState('error',e.message)}}
+async function syTakeCloud(){SY.busy=true;syState('busy');try{const r=await syRest('GET','books?select=data,version&user_id=eq.'+SY.sess.uid);if(r&&r[0]){S=Object.assign(blank(),r[0].data);S.settings=Object.assign(blank().settings,S.settings);syBase(r[0].version);syDirty(false);await idbPut('state',JSON.stringify(S));D=null;render();syState('ok','Updated from cloud '+new Date().toLocaleTimeString('en-IN'));toast('Updated with the latest entries from the cloud')}}catch(e){syState('error',e.message)}SY.busy=false}
+function syConflict(rv){syState('conflict','This device and the cloud both have new changes.');
+ const keepCloud=confirm('Entries were made on another device AND on this one since the last sync.\n\nOK = use the CLOUD copy (this device\'s unsynced changes are saved to a backup file first).\nCancel = keep THIS DEVICE\'s copy and overwrite the cloud.');
+ if(keepCloud){download('GingerBooks-before-cloud-'+today()+'.json',JSON.stringify(S),'application/json');syTakeCloud()}else{syBase(rv);syncPush()}}
+function syncAfterCommit(){if(!syncOn())return;syDirty(true);syState('dirty');clearTimeout(SY.timer);SY.timer=setTimeout(syncPush,2500)}
+async function syncSignIn(){const email=document.getElementById('syEmail').value.trim(),pw=document.getElementById('syPw').value;SY.cfg.url=document.getElementById('syUrl').value.trim();SY.cfg.key=document.getElementById('syKey').value.trim();sySave();
+ if(!SY.cfg.url||!SY.cfg.key||!email||!pw)return toast('Fill in all four fields');try{sySetSess(await syAuth('token?grant_type=password',{email,password:pw}));toast('Signed in. Syncing…');
+  const r=await syRest('GET','books?select=version,updated_at&user_id=eq.'+SY.sess.uid);
+  if(r&&r.length){const hasLocal=S.sales.length+S.purchases.length+S.items.length>0;if(!hasLocal||confirm(`The cloud already has books (last saved ${new Date(r[0].updated_at).toLocaleString('en-IN')}).\n\nOK = load the cloud books on this device (this device's current data is downloaded as a backup file first).\nCancel = replace the cloud books with this device's data.`)){if(hasLocal)download('GingerBooks-before-cloud-'+today()+'.json',JSON.stringify(S),'application/json');syBase(0);await syTakeCloud()}else{syBase(r[0].version);syDirty(true);await syncPush()}}
+  else{syBase(0);syDirty(true);await syncPush()}render()}catch(e){alert(e.message)}}
+function syncSignOut(){if(!confirm('Stop syncing on this device? Data stays on this device.'))return;SY.sess=null;sySave();syBase(0);syDirty(false);render()}
+function syncSection(){const c=SY.cfg;return `<div class="card"><h2>Cloud sync (use the same books on laptop and phone)</h2>
+ ${syncOn()?`<p>Signed in as <b>${esc(SY.sess.email||'')}</b>. ${syncPill()}</p><div class="mut" style="font-size:13px">${esc(SY.msg)}</div><div class="row"><button class="btn o" onclick="syncPull(true)">Sync now</button><button class="btn o" onclick="syncSignOut()">Stop syncing on this device</button></div>`
+ :`<p class="mut" style="font-size:13.5px">Optional. Sign in with the same email and password on every device (laptop file, website, phone) and they all show the same books. Entries are saved on the device first and sent to the cloud when there is internet.</p>
+ <div class="f"><div><label>Email</label><input id="syEmail" type="email" autocomplete="username"></div><div><label>Password</label><input id="syPw" type="password" autocomplete="current-password"></div></div>
+ <details style="margin:6px 0 10px"><summary class="mut" style="font-size:12.5px;cursor:pointer">Advanced (cloud address, already filled in)</summary><div class="f"><div><label>Cloud address (Supabase URL)</label><input id="syUrl" value="${esc(c.url)}" placeholder="https://xxxx.supabase.co"></div><div><label>Public key (anon key)</label><input id="syKey" value="${esc(c.key)}"></div></div></details>
+ <button class="btn" onclick="syncSignIn()">Sign in and sync</button>`}</div>`}
+window.addEventListener('online',()=>syncPull(true));
+window.addEventListener('focus',()=>syncPull());
+setInterval(()=>{if(document.visibilityState==='visible')syncPull()},30000);
+
 /* ================= SAMPLE DATA ================= */
 function loadSample(){if((S.sales.length||S.purchases.length)&&!confirm('Sample data will REPLACE all current data. Continue?'))return;
  let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;const t=today(),ago=n=>addDays(t,-n);
@@ -866,7 +911,7 @@ window.addEventListener('error',e=>toast('Error: '+e.message,6000));
  try{FH=await idbGet('fh')||null;if(FH&&(await FH.queryPermission({mode:'readwrite'}))!=='granted')AUTO_NEEDS=true}catch(e){FH=null}
  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
  if(!S.settings.name&&!S.items.length)PAGE='settings';render();
- setInterval(()=>{if(PAGE==='dash'&&!D)render()},60000);
+ setInterval(()=>{if(PAGE==='dash'&&!D)render()},60000);if(syncOn()){syState(syDirty()?'dirty':'ok');syncPull(true)}
  window.addEventListener('storage',()=>{});})();
 </script>
 </body>
