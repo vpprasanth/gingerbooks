@@ -9,3 +9,8 @@ alter table public.books enable row level security;
 create policy "read own books"   on public.books for select using (auth.uid() = user_id);
 create policy "insert own books" on public.books for insert with check (auth.uid() = user_id);
 create policy "update own books" on public.books for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Newer Supabase projects do not grant table rights automatically.
+grant usage on schema public to authenticated;
+grant select, insert, update on public.books to authenticated;
+revoke all on public.books from anon;
