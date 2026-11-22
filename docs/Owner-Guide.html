@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GingerBooks – Owner guide</title>
+<style>body{font:16px/1.6 "Segoe UI",system-ui,sans-serif;max-width:860px;margin:30px auto;padding:0 20px;color:#2b2118;background:#faf7f2}h1{color:#8a4b0c}h2{border-bottom:2px solid #e8e0d4;padding-bottom:4px;margin-top:34px}.box{background:#fff;border:1px solid #e8e0d4;border-radius:10px;padding:12px 18px;margin:12px 0}.warn{background:#fdebd0;border-color:#f5cba7}code{background:#f3e9dc;padding:1px 5px;border-radius:4px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #e8e0d4;padding:6px 8px;text-align:left;vertical-align:top}th{background:#fbf3e8}</style></head><body>
+<h1>🫚 GingerBooks: owner guide</h1>
+<p>GingerBooks runs your ginger candy business: billing, stock, production, payments, expenses, GST reports and profit. It is a single file and needs no installation or internet connection. It costs nothing to run.</p>
+
+<h2>1. Your folder: C:\GingerCan</h2>
+<table><tr><th>Folder / file</th><th>What it is for</th></tr>
+<tr><td><b>GingerBooks.html</b></td><td>The app. Double-click it to open it in <b>Google Chrome</b> or <b>Microsoft Edge</b>. Right-click → <i>Open with</i> → Chrome if it opens in another browser.</td></tr>
+<tr><td>Backups</td><td>Your safety copies of all data. Keep the auto-backup file here.</td></tr>
+<tr><td>Bank statements</td><td>Save statements downloaded from net banking here before importing them.</td></tr>
+<tr><td>Invoices</td><td>Save invoice and credit note PDFs here.</td></tr>
+<tr><td>Reports</td><td>Save GST reports, the P&amp;L and other Excel (CSV) downloads here.</td></tr>
+<tr><td>Guide</td><td>This guide.</td></tr></table>
+<div class="box">Tip: right-click GingerBooks.html → <i>Send to</i> → <i>Desktop (create shortcut)</i> so you can open it from the desktop.</div>
+
+<h2>2. Where your data is kept (please read)</h2>
+<div class="box warn">Your entries are saved <b>inside the browser on this laptop</b>, not inside the HTML file. Use the same browser every time. Clearing browsing data, resetting Windows or changing laptops will lose the data unless you have a backup.</div>
+<p><b>Set up automatic backup once (2 minutes):</b> Settings &amp; backup → <i>Choose auto-backup file</i> → open <code>C:\GingerCan\Backups</code> → Save. Every change is then copied to that file automatically. If Chrome later asks for permission again, click <i>Reconnect</i> on the Alerts page.</p>
+<p><b>For a cloud copy at no cost:</b> put the Backups folder inside OneDrive or Google Drive, or click <i>Download backup now</i> once a week and email the file to yourself.</p>
+<p><b>New laptop:</b> copy GingerBooks.html across, open it, then go to Settings → <i>Restore from backup</i> and choose the latest .json backup file.</p>
+
+<h2>3. First-time setup (in this order)</h2>
+<ol>
+<li><b>Try it first (optional):</b> Settings → <i>Load sample data</i> and click through every page. Then click <i>Erase all data</i> (type ERASE) before you enter real data.</li>
+<li><b>Settings:</b> business name, GSTIN, state, address, FSSAI number, bank/UPI details, invoice terms and monthly sales target.</li>
+<li><b>Products:</b> add each candy pack (type <i>Finished</i>), each raw material (ginger, jaggery, sugar: type <i>Raw material</i>) and each packing item you keep in stock (pouches, jars, labels: type <i>Packing</i>). Enter the HSN code (sugar confectionery is usually 1704), GST rate, selling price, cost, reorder level and shelf life in days. <b>Confirm the GST rate with your accountant.</b></li>
+<li><b>Customers, Suppliers, Vendors:</b>
+ <ul><li><b>Customers</b> are the people who buy from you. Enter the GSTIN if they have one, plus their default discount % and credit days.</li>
+ <li><b>Suppliers</b> sell you goods: ginger, jaggery, pouches. Also enter their delivery lead time.</li>
+ <li><b>Vendors</b> provide services: transporter, electricity board, dryer service technician, label printer, ad agency, auditor.</li></ul></li>
+<li><b>Opening stock:</b> Stock &amp; batches → <i>+ Opening stock</i>. Add each batch you have today with its expiry date.</li>
+<li><b>Backup:</b> set up the auto-backup file (section 2).</li></ol>
+
+<h2>4. Daily work</h2>
+<table><tr><th>When this happens…</th><th>Do this</th></tr>
+<tr><td>You sell</td><td><b>Sales invoices → + New invoice.</b> Pick the customer; the place of supply decides CGST+SGST or IGST automatically. Choose products. The batch is picked automatically, earliest expiry first. Set the price in either of two ways: type the <b>rate</b> and <b>discount %</b>, or type the <b>margin %</b> you want over your cost and the rate is calculated for you. “Same discount / margin on all lines” applies one figure to every line. Choose how payment was received, then <b>Save &amp; print</b>. In the print window choose <i>Save as PDF</i> and save it in <code>C:\GingerCan\Invoices</code>.</td></tr>
+<tr><td>A customer orders for later</td><td><b>Orders → + New order.</b> When you deliver, click <i>Make invoice</i>; pending quantities are filled in for you.</td></tr>
+<tr><td>Goods arrive from a supplier</td><td><b>Purchases → + New purchase.</b> Enter the supplier bill number, batch, expiry, quantity and rate.</td></tr>
+<tr><td>You cook / pack a batch</td><td><b>Production → + Record production.</b> Enter the quantity made and the materials used. The new batch gets an expiry date automatically, and its cost is worked out from the materials.</td></tr>
+<tr><td>Money comes in later (UPI, cheque, DD, cash, NEFT)</td><td><b>Payments &amp; dues → + Record payment.</b> The amount is adjusted against the oldest unpaid invoices. Cheques and DDs stay <i>Awaiting clearance</i> until the bank statement shows them, or until you click <i>Cleared</i> / <i>Bounced</i>.</td></tr>
+<tr><td>You pay an expense</td><td><b>Expenses → + Add expense.</b> Choose the type: <b>OpEx</b> for running costs, <b>CapEx</b> for machines and assets, or <b>Not a cost</b> for supplier payments, GST paid and loans. Then choose the category and the vendor. Use <i>Repeat</i> to copy last month's rent or salary entry.</td></tr>
+<tr><td>A customer returns goods</td><td><b>Returns → Customer return.</b> This makes a credit note. Untick “put back into stock” if the goods are damaged.</td></tr>
+<tr><td>You return goods to a supplier</td><td><b>Returns → Return to supplier.</b> This makes a debit note.</td></tr></table>
+
+<h2>5. Expense categories included</h2>
+<p><b>Packing &amp; labelling:</b> labels &amp; stickers, printing, packing material (cartons, tape, shrink wrap), pouches/jars not tracked in stock, barcode/batch coding, packing labour.<br>
+<b>Production:</b> fuel/gas/firewood, electricity, water, labour (daily/piece rate), consumables (gloves, caps, cleaning), small ingredients, lab testing, <b>dryer / machine service charges (AMC)</b>, machine repairs.<br>
+<b>Selling &amp; delivery:</b> transport/freight, courier, loading/unloading (hamali), commission/distributor margin, online marketplace fees, payment gateway charges, free samples, damaged goods.<br>
+<b>Marketing:</b> advertising, social media ads, flex/banners, exhibitions, website.<br>
+<b>Staff:</b> <b>employee salaries</b>, staff welfare, PF/ESI, bonus.<br>
+<b>Premises:</b> rent, storage/warehouse, security, cleaning &amp; pest control, building repairs.<br>
+<b>Admin &amp; compliance:</b> auditor/accountant fees, legal fees, FSSAI and trade licences, trademark, software, insurance, bank charges, loan interest, GST late fees, phone/internet, stationery, travel.<br>
+<b>CapEx (assets):</b> machinery, dryer/dehydrator, cooking vessels &amp; stoves, sealing machine, weighing scales, label printer, printing cylinders, building, vehicle, furniture, computer.<br>
+You can type your own category name if none of these fit. Mark each expense <b>Fixed</b> (same every month, e.g. rent and salaries) or <b>Variable</b> (rises with sales, e.g. labels and transport). The break-even figure depends on this split.</p>
+<div class="box">Labels, pouches and jars that you buy in bulk and want to count are better added as <b>Packing</b> products and bought through Purchases. The app then deducts them in Production and includes them in product cost.</div>
+
+<h2>6. Bank statement</h2>
+<ol><li>In net banking, download the statement as <b>Excel (.xlsx)</b> or <b>CSV</b>. Save it in <code>C:\GingerCan\Bank statements</code>. If the bank gives an old <b>.xls</b> file, open it in Excel and use <i>Save As → Excel Workbook (.xlsx)</i>.</li>
+<li>Bank statement → <i>Import statement</i>. Check that the columns are mapped correctly, then click <i>Import</i>.</li>
+<li>Money in is matched to the UPI, cheque and NEFT payments you recorded. Where there is no match, the app suggests an invoice of the same amount, or a customer whose name appears in the narration.</li>
+<li>For money out, click <i>Save as expense</i>. The category is guessed from the narration (TNEB → Electricity, DTDC → Courier, and so on).</li></ol>
+<p>Linking directly to the bank account is not possible in a free tool. In India that requires RBI's licensed Account Aggregator network. Importing the statement takes about a minute a week. Importing the same file twice is safe because duplicates are skipped.</p>
+
+<h2>7. Reading the reports</h2>
+<ul><li><b>Dashboard:</b> today's and this month's sales; a period table (today, week, month, quarter, year) with like-for-like comparisons; target progress; payment mix; trend chart; fast movers with 🔥 spikes; top suppliers and customers; returns.</li>
+<li><b>Alerts:</b> negative stock, empty (zero) batches, expired and expiring stock, low stock, items sold below cost, dead stock, overdue payments, cheques not cleared, overdue orders, backup due.</li>
+<li><b>Demand vs supply:</b> pending orders against good stock, and how much to make or buy now.</li>
+<li><b>GST &amp; reports:</b> pick the month. You get GSTR-1 tables (B2B, B2C large and small, credit notes, HSN summary, documents issued) and a GSTR-3B summary (output tax, input credit, cash payable). There are also sales, purchase and returns registers and stock/expiry reports. Every table has an <b>Excel (CSV)</b> button. Give these to your accountant; they are working summaries, so check them against the GST portal before filing.</li>
+<li><b>Profit &amp; break-even:</b> a profit &amp; loss statement; the break-even sales per month and your margin of safety; contribution by product; and a what-if calculator (price, cost per unit, fixed cost) with a chart.</li>
+<li><b>Party analysis:</b> customers grouped by activity (Active, Slowing, At risk, Lost), share of sales, margin, returns, dues; suppliers by share, return %, and raw-material price movement; vendors by spending.</li></ul>
+
+<h2>8. Rules the app follows</h2>
+<ul><li>Invoice numbers run per financial year, for example INV/2026-27/0001. A saved invoice cannot be edited. Cancel it and make a new one. The cancelled number is still reported in GSTR-1 “documents issued”, as GST rules require.</li>
+<li>If you bill more than you have in stock, the app warns you but lets you save. The item then shows in Alerts as negative stock until you enter the missing purchase or production.</li>
+<li>Expired batches are never picked automatically for sale.</li></ul>
+<p style="color:#7a6a5a;font-size:13px">GingerBooks · works offline in Chrome or Edge · data stays on this computer.</p>
+</body></html>

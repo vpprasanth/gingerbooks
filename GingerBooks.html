@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GingerBooks</title>
+<style>
+:root{--g:#c8741a;--gd:#8a4b0c;--bg:#faf7f2;--card:#fff;--line:#e8e0d4;--txt:#2b2118;--mut:#7a6a5a;--red:#c0392b;--amb:#d68910;--grn:#1e8449}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt)}
+#app{display:flex;min-height:100vh}
+#nav{width:225px;background:#2b2118;color:#f3e9dc;padding:12px 8px;position:sticky;top:0;height:100vh;overflow:auto;flex-shrink:0}
+#nav .brand{font-weight:700;font-size:17px;padding:6px 10px 2px;color:#ffd9a8}
+#nav .biz{font-size:12px;padding:0 10px 12px;color:#bba893}
+#nav a{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:8px;color:inherit;text-decoration:none;cursor:pointer;user-select:none}
+#nav a:hover{background:#3d3024}#nav a.on{background:var(--g);color:#fff}
+#nav .sep{border-top:1px solid #45372a;margin:8px 4px}
+.badge{margin-left:auto;background:var(--red);color:#fff;border-radius:10px;padding:0 7px;font-size:12px}
+main{flex:1;padding:20px 26px;max-width:1280px;min-width:0}
+h1{font-size:22px;margin:0 0 14px}h2{font-size:17px;margin:4px 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.grid2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.kpi .v{font-size:22px;font-weight:700}.kpi .l{color:var(--mut);font-size:13px}.kpi .s{font-size:12px;color:var(--mut)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12.5px;color:var(--mut);font-weight:600;background:#fbf8f3}
+td.n,th.n{text-align:right;white-space:nowrap}
+.btn{display:inline-block;border:1px solid var(--g);background:var(--g);color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;margin:2px;font-family:inherit}
+.btn:hover{filter:brightness(.95)}.btn.o{background:#fff;color:var(--gd)}.btn.s{padding:4px 9px;font-size:13px}.btn.r{background:var(--red);border-color:var(--red);color:#fff}
+input,select,textarea{font:inherit;padding:7px 8px;border:1px solid #d6cbbb;border-radius:7px;background:#fff;width:100%}
+input[type=checkbox]{width:auto}
+label{display:block;font-size:13px;color:var(--mut);margin-bottom:3px}
+.f{display:grid;gap:10px 14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:8px}
+.lines td{padding:4px;border-bottom:none}.lines input,.lines select{padding:6px}
+.tot{margin-left:auto;max-width:360px}.tot div{display:flex;justify-content:space-between;padding:3px 0}
+.tot .big{font-size:19px;font-weight:700;border-top:2px solid var(--txt);margin-top:4px;padding-top:6px}
+.pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;background:#eee;white-space:nowrap}
+.pill.red{background:#fadbd8;color:var(--red)}.pill.amber{background:#fdebd0;color:#9c640c}.pill.green{background:#d5f5e3;color:var(--grn)}.pill.grey{background:#eee;color:#555}
+.alert{padding:9px 12px;border-left:4px solid;border-radius:6px;margin:6px 0;background:#fff;display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.alert.red{border-left-color:var(--red)}.alert.amber{border-left-color:var(--amb)}.alert.grey{border-left-color:#999}
+.alert b{min-width:130px}
+.mut{color:var(--mut)}.up{color:var(--grn)}.dn{color:var(--red)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs a{padding:6px 12px;border-radius:20px;border:1px solid var(--line);cursor:pointer;background:#fff}
+.tabs a.on{background:var(--g);color:#fff;border-color:var(--g)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sp{flex:1}
+#toast{position:fixed;bottom:20px;right:20px;background:#2b2118;color:#fff;padding:10px 16px;border-radius:8px;display:none;z-index:9;max-width:420px}
+.banner{background:#fdebd0;border:1px solid #f5cba7;padding:10px 14px;border-radius:10px;margin-bottom:14px}
+.banner.red{background:#fadbd8;border-color:#f1948a}
+.scroll{overflow-x:auto}
+.bar{fill:var(--g)}.bar:hover{fill:var(--gd)}
+.hbar{height:8px;background:#f3e3cf;border-radius:4px;overflow:hidden}.hbar i{display:block;height:100%;background:var(--g)}
+#print{display:none}
+@media print{#app,#toast{display:none!important}#print{display:block}body{background:#fff}}
+@media(max-width:820px){#app{flex-direction:column}#nav{width:auto;height:auto;position:static;display:flex;flex-wrap:wrap}#nav .brand,#nav .biz{width:100%}#nav .sep{display:none}main{padding:12px}}
+.inv{font:11px/1.35 Arial,Helvetica,sans-serif;color:#000}
+.inv table{border-collapse:collapse;width:100%}
+.inv td,.inv th{border:1px solid #000;padding:3px 5px;background:none;color:#000;font-size:10.5px}
+.inv th{font-weight:bold;text-align:center}
+.inv .t{font-size:16px;font-weight:bold;text-align:center;letter-spacing:1px}
+.inv .nb td{border:none}
+.inv .n{text-align:right}
+@page{size:A4;margin:10mm}
+</style>
+</head>
+<body>
+<div id="app"><aside id="nav"></aside><main id="main">Loading…</main></div>
+<div id="print"></div>
+<div id="toast"></div>
+<script>
+'use strict';
+/* ============ GingerBooks: offline operations app for a small food manufacturer ============
+   All data lives in this browser (IndexedDB). Use Settings > Backup to save a copy. */
+
+const STATES={'01':'Jammu and Kashmir','02':'Himachal Pradesh','03':'Punjab','04':'Chandigarh','05':'Uttarakhand','06':'Haryana','07':'Delhi','08':'Rajasthan','09':'Uttar Pradesh','10':'Bihar','11':'Sikkim','12':'Arunachal Pradesh','13':'Nagaland','14':'Manipur','15':'Mizoram','16':'Tripura','17':'Meghalaya','18':'Assam','19':'West Bengal','20':'Jharkhand','21':'Odisha','22':'Chhattisgarh','23':'Madhya Pradesh','24':'Gujarat','26':'Dadra and Nagar Haveli and Daman and Diu','27':'Maharashtra','29':'Karnataka','30':'Goa','31':'Lakshadweep','32':'Kerala','33':'Tamil Nadu','34':'Puducherry','35':'Andaman and Nicobar Islands','36':'Telangana','37':'Andhra Pradesh','38':'Ladakh','97':'Other Territory'};
+const UNITS=['PCS','PAC','BOX','JAR','BTL','KGS','GMS','NOS','BAG','CTN','LTR','OTH'];
+const RATES=[0,5,12,18,28,40];
+const TYPES=['Finished','Raw material','Packing'];
+const EXCATS={OpEx:[
+ ['Labels & stickers','Variable','Packing & labelling'],['Printing (pouches, wrappers, boxes)','Variable','Packing & labelling'],['Packing material (cartons, tape, shrink wrap)','Variable','Packing & labelling'],['Pouches / jars (not tracked in stock)','Variable','Packing & labelling'],['Barcode / GS1 / batch coding','Fixed','Packing & labelling'],['Packing labour','Variable','Packing & labelling'],
+ ['Fuel / gas / firewood for cooking','Variable','Production'],['Electricity','Fixed','Production'],['Water','Fixed','Production'],['Labour charges (daily / piece rate)','Variable','Production'],['Production consumables (gloves, caps, cleaning)','Variable','Production'],['Small ingredients not tracked in stock','Variable','Production'],['Lab testing / quality checks','Fixed','Production'],['Dryer / machine service charges (AMC)','Fixed','Production'],['Repairs & maintenance (machines)','Fixed','Production'],
+ ['Transportation / freight','Variable','Selling & delivery'],['Courier / parcel charges','Variable','Selling & delivery'],['Loading / unloading (hamali)','Variable','Selling & delivery'],['Sales commission / distributor margin','Variable','Selling & delivery'],['Online marketplace fees (Amazon, Flipkart etc.)','Variable','Selling & delivery'],['Payment gateway / UPI / card charges','Variable','Selling & delivery'],['Free samples & tasting','Variable','Selling & delivery'],['Damaged / returned goods written off','Variable','Selling & delivery'],
+ ['Advertising & marketing','Fixed','Marketing'],['Social media / online ads','Fixed','Marketing'],['Flex, banners & print ads','Fixed','Marketing'],['Exhibitions / trade fairs','Fixed','Marketing'],['Website & domain','Fixed','Marketing'],
+ ['Employee salaries','Fixed','Staff'],['Staff welfare (tea, food, uniforms)','Fixed','Staff'],['PF / ESI contribution','Fixed','Staff'],['Bonus & incentives','Fixed','Staff'],
+ ['Rent','Fixed','Premises'],['Inventory storage / warehouse','Fixed','Premises'],['Security','Fixed','Premises'],['Cleaning & pest control','Fixed','Premises'],['Repairs & maintenance (building)','Fixed','Premises'],
+ ['Auditor / accountant fees','Fixed','Admin & compliance'],['Legal & professional fees','Fixed','Admin & compliance'],['Licences & fees (FSSAI, trade licence)','Fixed','Admin & compliance'],['Trademark & registrations','Fixed','Admin & compliance'],['Accounting / billing software','Fixed','Admin & compliance'],['Insurance','Fixed','Admin & compliance'],['Bank charges','Fixed','Admin & compliance'],['Interest on loan','Fixed','Admin & compliance'],['GST late fee / penalty','Fixed','Admin & compliance'],['Telephone & internet','Fixed','Admin & compliance'],['Office & stationery','Fixed','Admin & compliance'],['Travel & conveyance','Fixed','Admin & compliance'],['Other expense','Fixed','Other']],
+ CapEx:[['Machinery & equipment','Fixed','Assets'],['Dryer / dehydrator','Fixed','Assets'],['Cooking vessels, stoves & kitchen equipment','Fixed','Assets'],['Packing / sealing machine','Fixed','Assets'],['Weighing scales','Fixed','Assets'],['Label printer / batch coder','Fixed','Assets'],['Printing cylinders, moulds & dies','Fixed','Assets'],['Building / renovation','Fixed','Assets'],['Vehicle','Fixed','Assets'],['Furniture & fittings','Fixed','Assets'],['Computer, printer & software','Fixed','Assets'],['Other asset','Fixed','Assets']],
+ Other:[['Supplier payment (for purchases)','—','Not a cost'],['GST / tax paid to government','—','Not a cost'],['Loan repayment (principal)','—','Not a cost'],['Owner drawings','—','Not a cost'],['Capital introduced / transfer','—','Not a cost']]};
+
+
+/* ---------- helpers ---------- */
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const pad=n=>String(n).padStart(2,'0');
+const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today=()=>ymd(new Date());
+function addDays(d,n){const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+(+n||0));return ymd(x)}
+const dmy=d=>d?d.slice(8,10)+'-'+d.slice(5,7)+'-'+d.slice(0,4):'';
+const r2=n=>Math.round(((+n||0)+Number.EPSILON)*100)/100;
+const r3=n=>Math.round(((+n||0)+Number.EPSILON)*1000)/1000;
+const f2=n=>(+n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+const money=n=>(+n<0?'−₹'+f2(-n):'₹'+f2(n));
+const money0=n=>{const v=Math.round(+n||0);return (v<0?'−₹':'₹')+Math.abs(v).toLocaleString('en-IN')};
+const qf=n=>(+n||0).toLocaleString('en-IN',{maximumFractionDigits:3});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const byId=(a,id)=>a.find(x=>x.id===id);
+const opt=(v,l,sel)=>`<option value="${esc(v)}"${String(v)===String(sel??'')?' selected':''}>${esc(l)}</option>`;
+const stName=c=>c?c+'-'+(STATES[c]||''):'';
+function fy(date){const y=+date.slice(0,4),m=+date.slice(5,7);const s=m>=4?y:y-1;return s+'-'+pad((s+1)%100)}
+function fyStart(date){const y=+date.slice(0,4),m=+date.slice(5,7);return (m>=4?y:y-1)+'-04-01'}
+function nextNo(prefix,date){const k=prefix+'/'+fy(date);S.counters[k]=(S.counters[k]||0)+1;return k+'/'+String(S.counters[k]).padStart(4,'0')}
+function gstinValid(g){if(!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(g))return false;return gstinCheck(g.slice(0,14))===g[14]}
+function gstinCheck(p){const cs='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';let sum=0;for(let i=0;i<14;i++){const v=cs.indexOf(p[i])*(i%2?2:1);sum+=Math.floor(v/36)+v%36}return cs[(36-sum%36)%36]}
+function words(n){const a=['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'],b=['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+ const two=x=>x<20?a[x]:b[Math.floor(x/10)]+(x%10?' '+a[x%10]:'');
+ const three=x=>(x>=100?a[Math.floor(x/100)]+' Hundred'+(x%100?' ':''):'')+two(x%100);
+ let r='';const cr=Math.floor(n/1e7);n%=1e7;const l=Math.floor(n/1e5);n%=1e5;const th=Math.floor(n/1000);n%=1000;
+ if(cr)r+=three(cr)+' Crore ';if(l)r+=two(l)+' Lakh ';if(th)r+=two(th)+' Thousand ';if(n)r+=three(n);return r.trim()||'Zero'}
+function amountWords(x){x=Math.abs(+x||0);const rs=Math.floor(x),p=Math.round((x-rs)*100);return 'Rupees '+words(rs)+(p?' and '+words(p)+' Paise':'')+' Only'}
+function toast(m,ms){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',ms||2600)}
+function filt(inp,tid){const q=inp.value.toLowerCase();document.querySelectorAll('#'+tid+' tr').forEach((tr,i)=>{if(i)tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none'})}
+function download(fn,data,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=fn;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800)}
+function csvText(h,rows){const q=v=>{v=v==null?'':String(v);return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};return [h,...rows].map(r=>r.map(q).join(',')).join('\r\n')}
+function csv(name,h,rows){download(name.replace(/[^\w\-]+/g,'_')+'.csv','\ufeff'+csvText(h,rows),'text/csv;charset=utf-8')}
+
+/* ---------- storage ---------- */
+const DBNAME='gingerbooks',STORE='kv';
+let S=null,FH=null,AUTO_NEEDS=false;
+function blank(){return{version:1,settings:{name:'',address:'',gstin:'',state:'',phone:'',email:'',bank:'',fssai:'',terms:'Goods once sold are taken back only as per our return policy. Subject to local jurisdiction.',expiryWarnDays:30,b2clLimit:100000,backupDays:7,monthTarget:0},
+ items:[],customers:[],suppliers:[],batches:[],moves:[],purchases:[],sales:[],salesReturns:[],purchaseReturns:[],orders:[],production:[],adjustments:[],receipts:[],expenses:[],bankTxns:[],vendors:[],counters:{},lastBackup:null,created:today()}}
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open(DBNAME,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function idbGet(k){const db=await idb();return new Promise((res,rej)=>{const q=db.transaction(STORE).objectStore(STORE).get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function idbPut(k,v){const db=await idb();return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(v,k);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
+async function persist(){const data=JSON.stringify(S);try{await idbPut('state',data)}catch(e){try{localStorage.setItem(DBNAME,data)}catch(e2){toast('Could not save! Download a backup now.',8000)}}
+ clearTimeout(persist.t);persist.t=setTimeout(writeFH,1500)}
+function commit(msg){persist();render();if(msg)toast(msg)}
+async function writeFH(){if(!FH)return;try{if((await FH.queryPermission({mode:'readwrite'}))!=='granted'){AUTO_NEEDS=true;return}
+ const w=await FH.createWritable();await w.write(JSON.stringify(S,null,0));await w.close();AUTO_NEEDS=false;localStorage.setItem(DBNAME+'-auto',new Date().toISOString())}catch(e){AUTO_NEEDS=true}}
+async function pickBackupFile(){try{FH=await window.showSaveFilePicker({suggestedName:'GingerBooks-autobackup.json',types:[{description:'GingerBooks backup',accept:{'application/json':['.json']}}]});await idbPut('fh',FH);await writeFH();render();toast('Auto-backup is ON. Every change is copied to that file.')}catch(e){}}
+async function reconnectFH(){try{if(FH&&(await FH.requestPermission({mode:'readwrite'}))==='granted'){await writeFH();render();toast('Auto-backup reconnected')}}catch(e){}}
+async function stopAuto(){FH=null;await idbPut('fh',null);render()}
+
+/* ---------- stock engine ---------- */
+let STK=null;
+function stock(){if(STK)return STK;const b={},it={};for(const m of S.moves){if(m.batchId)b[m.batchId]=r3((b[m.batchId]||0)+m.qty);it[m.itemId]=r3((it[m.itemId]||0)+m.qty)}return STK={b,it}}
+function addMove(itemId,batchId,qty,type,refId,date){S.moves.push({id:uid(),itemId,batchId:batchId||null,qty:r3(qty),type,refId,date});STK=null}
+function removeMoves(refId){S.moves=S.moves.filter(m=>m.refId!==refId);STK=null}
+function getBatch(itemId,no,mfg,exp,cost){no=(no||'').trim()||autoBatch(mfg||today());let b=S.batches.find(x=>x.itemId===itemId&&x.no.toLowerCase()===no.toLowerCase());
+ if(!b){b={id:uid(),itemId,no,mfg:mfg||'',exp:exp||'',cost:+cost||0,closed:false};S.batches.push(b)}else{if(exp&&!b.exp)b.exp=exp;if(mfg&&!b.mfg)b.mfg=mfg;if(cost&&!b.cost)b.cost=+cost;b.closed=false}return b}
+const autoBatch=d=>'B'+d.slice(2,4)+d.slice(5,7)+d.slice(8,10);
+function available(itemId){const st=stock(),t=today();return r3(S.batches.filter(b=>b.itemId===itemId&&(!b.exp||b.exp>=t)).reduce((s,b)=>s+Math.max(0,st.b[b.id]||0),0))}
+function allocate(itemId,qty,simB){const t=today();const bs=S.batches.filter(b=>b.itemId===itemId&&(!b.exp||b.exp>=t)&&(simB[b.id]||0)>0).sort((a,b)=>(a.exp||'9999').localeCompare(b.exp||'9999')||a.no.localeCompare(b.no));
+ const out=[];let rem=r3(qty);for(const b of bs){if(rem<=0)break;const take=Math.min(rem,simB[b.id]);out.push({batchId:b.id,qty:r3(take)});simB[b.id]=r3(simB[b.id]-take);rem=r3(rem-take)}
+ if(rem>0)out.push({batchId:null,qty:rem,short:true});return out}
+function batchText(alloc){return alloc.map(a=>{const b=byId(S.batches,a.batchId);return b?b.no+(b.exp?' (exp '+dmy(b.exp)+')':'')+(alloc.length>1?' × '+qf(a.qty):''):'no stock'+(alloc.length>1?' × '+qf(a.qty):'')}).join(', ')}
+function itemCost(itemId){const it=byId(S.items,itemId);return +(it&&it.cost)||0}
+function stockValue(){const st=stock();let v=0;for(const b of S.batches){const q=st.b[b.id]||0;if(q>0)v+=q*(b.cost||itemCost(b.itemId))}return v}
+
+/* ---------- tax ---------- */
+function calcLines(lines,inter){const t={taxable:0,cgst:0,sgst:0,igst:0};
+ for(const l of lines){const it=byId(S.items,l.itemId);if(it){l.name=l.name||it.name;l.hsn=l.hsn||it.hsn||'';l.unit=l.unit||it.unit||''}
+  l.taxable=r2((+l.qty||0)*(+l.rate||0)*(1-(+l.disc||0)/100));const tax=r2(l.taxable*(+l.gst||0)/100);
+  if(inter){l.igst=tax;l.cgst=0;l.sgst=0}else{l.cgst=r2(tax/2);l.sgst=r2(tax-l.cgst);l.igst=0}
+  l.total=r2(l.taxable+tax);t.taxable+=l.taxable;t.cgst+=l.cgst;t.sgst+=l.sgst;t.igst+=l.igst}
+ for(const k in t)t[k]=r2(t[k]);t.gross=r2(t.taxable+t.cgst+t.sgst+t.igst);t.total=Math.round(t.gross);t.roundOff=r2(t.total-t.gross);return t}
+function partyOf(coll,id,fallbackState,name){const c=byId(S[coll],id);return c?{name:c.name,gstin:(c.gstin||'').toUpperCase(),state:c.state||fallbackState,address:c.address||'',phone:c.phone||''}:{name:name||'Cash customer',gstin:'',state:fallbackState,address:'',phone:''}}
+
+/* ---------- posting (the single source of truth for every transaction) ---------- */
+function postSale(d){const st=stock();const simB={...st.b};const inter=d.pos!==S.settings.state;
+ const lines=d.lines.filter(l=>l.itemId&&+l.qty>0).map(l=>({itemId:l.itemId,batchSel:l.batchSel||'auto',qty:+l.qty,rate:+l.rate,disc:+l.disc||0,gst:+l.gst}));
+ for(const l of lines){if(l.batchSel!=='auto'){l.alloc=[{batchId:l.batchSel,qty:l.qty}];simB[l.batchSel]=r3((simB[l.batchSel]||0)-l.qty)}else l.alloc=allocate(l.itemId,l.qty,simB);l.batchText=batchText(l.alloc);
+  l.cost=r2(l.alloc.reduce((a,x)=>{const b=byId(S.batches,x.batchId);return a+x.qty*((b&&b.cost)||unitCostNow(l.itemId))},0)/l.qty)}
+ const t=calcLines(lines,inter);const id=uid();
+ const s={id,no:nextNo('INV',d.date),date:d.date,customerId:d.customerId||'',party:partyOf('customers',d.customerId,d.pos,d.walkinName),pos:d.pos,inter,lines,...t,payMode:d.payMode||'Cash',payRef:d.payRef||'',orderId:d.orderId||'',notes:d.notes||'',cancelled:false,created:new Date().toISOString()};
+ S.sales.push(s);for(const l of lines)for(const a of l.alloc)addMove(l.itemId,a.batchId,-a.qty,'sale',id,d.date);
+ if(s.payMode&&!/^Credit/.test(s.payMode)&&s.total>0)postReceipt({date:s.date,customerId:s.customerId,partyName:s.party.name,mode:s.payMode,ref:d.payRef||'',amount:s.total,allocs:[{saleId:s.id,amt:s.total}],auto:true});return s}
+function postPurchase(d){const sup=byId(S.suppliers,d.supplierId);const sst=(sup&&sup.state)||S.settings.state;const inter=sst!==S.settings.state;
+ const lines=d.lines.filter(l=>l.itemId&&+l.qty>0).map(l=>({itemId:l.itemId,batchNo:l.batchNo,mfg:l.mfg||'',exp:l.exp||'',qty:+l.qty,rate:+l.rate,disc:0,gst:+l.gst}));
+ const t=calcLines(lines,inter);const id=uid();
+ for(const l of lines){const b=getBatch(l.itemId,l.batchNo,l.mfg||d.date,l.exp,l.rate);l.batchId=b.id;l.batchNo=b.no;l.batchText=b.no+(b.exp?' (exp '+dmy(b.exp)+')':'')}
+ const p={id,no:nextNo('PUR',d.date),date:d.date,supplierId:d.supplierId||'',party:partyOf('suppliers',d.supplierId,sst,'Unknown supplier'),supInvNo:d.supInvNo||'',supInvDate:d.supInvDate||d.date,inter,lines,...t,cancelled:false,created:new Date().toISOString()};
+ S.purchases.push(p);for(const l of lines)addMove(l.itemId,l.batchId,l.qty,'purchase',id,d.date);return p}
+function returnedQty(coll,key,docId,idx){return S[coll].filter(r=>!r.cancelled&&r[key]===docId).reduce((s,r)=>s+r.lines.filter(l=>l.idx===idx).reduce((a,l)=>a+l.qty,0),0)}
+function postSalesReturn(d){const inv=byId(S.sales,d.invoiceId);const lines=d.lines.filter(x=>+x.qty>0).map(x=>{const o=inv.lines[x.idx];const ab=(o.alloc||[]).find(a=>a.batchId);
+  return{idx:x.idx,itemId:o.itemId,name:o.name,hsn:o.hsn,unit:o.unit,qty:+x.qty,rate:o.rate,disc:o.disc,gst:o.gst,batchId:ab?ab.batchId:null,batchText:ab?batchText([ab]):''}});
+ const t=calcLines(lines,inv.inter);const id=uid();
+ const r={id,no:nextNo('CN',d.date),date:d.date,invoiceId:inv.id,invoiceNo:inv.no,invoiceDate:inv.date,party:inv.party,pos:inv.pos,inter:inv.inter,reason:d.reason||'',restock:!!d.restock,lines,...t,cancelled:false};
+ S.salesReturns.push(r);if(r.restock)for(const l of lines)addMove(l.itemId,l.batchId,l.qty,'sales-return',id,d.date);return r}
+function postPurchaseReturn(d){const p=byId(S.purchases,d.purchaseId);const lines=d.lines.filter(x=>+x.qty>0).map(x=>{const o=p.lines[x.idx];
+  return{idx:x.idx,itemId:o.itemId,name:o.name,hsn:o.hsn,unit:o.unit,qty:+x.qty,rate:o.rate,disc:0,gst:o.gst,batchId:o.batchId,batchText:o.batchText}});
+ const t=calcLines(lines,p.inter);const id=uid();
+ const r={id,no:nextNo('DN',d.date),date:d.date,purchaseId:p.id,purchaseNo:p.no,supInvNo:p.supInvNo,supInvDate:p.supInvDate,party:p.party,pos:p.party.state,inter:p.inter,reason:d.reason||'',lines,...t,cancelled:false};
+ S.purchaseReturns.push(r);for(const l of lines)addMove(l.itemId,l.batchId,-l.qty,'purchase-return',id,d.date);return r}
+function postProduction(d){const it=byId(S.items,d.itemId);const exp=d.exp||(it&&it.shelfDays?addDays(d.date,it.shelfDays):'');const id=uid();
+ const simB={...stock().b};const inputs=d.inputs.filter(x=>x.itemId&&+x.qty>0).map(x=>{const alloc=allocate(x.itemId,+x.qty,simB);return{itemId:x.itemId,qty:+x.qty,alloc}});
+ let cost=0;for(const x of inputs)for(const a of x.alloc){const b=byId(S.batches,a.batchId);cost+=a.qty*((b&&b.cost)||itemCost(x.itemId))}
+ const unitCost=+d.qty?r2(cost/+d.qty):0;const b=getBatch(d.itemId,d.batchNo,d.date,exp,unitCost||itemCost(d.itemId));
+ const p={id,no:nextNo('PRD',d.date),date:d.date,itemId:d.itemId,qty:+d.qty,batchId:b.id,batchNo:b.no,exp:b.exp,inputs,unitCost,notes:d.notes||'',cancelled:false};
+ S.production.push(p);addMove(d.itemId,b.id,+d.qty,'production',id,d.date);for(const x of inputs)for(const a of x.alloc)addMove(x.itemId,a.batchId,-a.qty,'consumed',id,d.date);return p}
+function postAdjust(d){const it=byId(S.items,d.itemId);let b;if(d.batchSel&&d.batchSel!=='new')b=byId(S.batches,d.batchSel);else b=getBatch(d.itemId,d.batchNo,d.mfg||d.date,d.exp||(it&&it.shelfDays&&d.mfg?addDays(d.mfg,it.shelfDays):''),d.cost||itemCost(d.itemId));
+ const id=uid();const a={id,no:nextNo('ADJ',d.date),date:d.date,itemId:d.itemId,batchId:b.id,batchNo:b.no,qty:+d.qty,reason:d.reason||'Adjustment',cancelled:false};S.adjustments.push(a);addMove(d.itemId,b.id,+d.qty,'adjust',id,d.date);return a}
+function postOrder(d){const id=uid();const o={id,no:nextNo('SO',d.date),date:d.date,due:d.due||'',customerId:d.customerId||'',party:partyOf('customers',d.customerId,S.settings.state,d.walkinName),lines:d.lines.filter(l=>l.itemId&&+l.qty>0).map(l=>({itemId:l.itemId,qty:+l.qty,rate:+l.rate||0})),notes:d.notes||'',status:'open'};S.orders.push(o);return o}
+function orderProgress(o){return o.lines.map(l=>{const del=S.sales.filter(s=>!s.cancelled&&s.orderId===o.id).reduce((a,s)=>a+s.lines.filter(x=>x.itemId===l.itemId).reduce((b,x)=>b+x.qty,0),0);return{...l,delivered:r3(del),pending:o.status==='open'?Math.max(0,r3(l.qty-del)):0}})}
+function orderStatus(o){if(o.status==='cancelled')return['Cancelled','grey'];if(o.status==='closed')return['Closed','grey'];const p=orderProgress(o);const pend=p.reduce((a,l)=>a+l.pending,0),del=p.reduce((a,l)=>a+l.delivered,0);
+ if(pend<=0)return['Delivered','green'];if(o.due&&o.due<today())return[del?'Partly delivered · OVERDUE':'Pending · OVERDUE','red'];return[del?'Partly delivered':'Pending','amber']}
+
+/* ---------- alerts ---------- */
+function alerts(){const st=stock(),t=today(),warn=addDays(t,S.settings.expiryWarnDays||30),out=[];
+ const s=S.settings;if(!s.name||!s.state)out.push({lvl:'red',type:'Setup',text:'Business name and state are missing. Invoices need them.',btn:['Open settings',"go('settings')"]});
+ for(const it of S.items){const q=st.it[it.id]||0;if(q<0)out.push({lvl:'red',type:'Negative stock',text:`${it.name}: stock is ${qf(q)} ${it.unit}. More was sold or used than was recorded in. Enter the missing purchase, production or opening stock.`,btn:['Fix stock',`go('stock')`]});
+  else if(+it.reorder&&q<=+it.reorder)out.push({lvl:'amber',type:'Low stock',text:`${it.name}: only ${qf(q)} ${it.unit} left (reorder level ${qf(it.reorder)}).`,btn:['Demand vs supply',"go('demand')"]})}
+ for(const b of S.batches){if(b.closed)continue;const q=st.b[b.id]||0;const it=byId(S.items,b.itemId)||{name:'?',unit:''};
+  if(q<0)out.push({lvl:'red',type:'Negative batch',text:`Batch ${b.no} of ${it.name} shows ${qf(q)} ${it.unit}. Check the batch chosen on recent bills.`,btn:['View stock',"go('stock')"]});
+  else if(q===0)out.push({lvl:'grey',type:'Zero batch',text:`Batch ${b.no} of ${it.name} is empty.`,btn:['Close batch',`closeBatch('${b.id}')`]});
+  else if(b.exp&&b.exp<t)out.push({lvl:'red',type:'Expired stock',text:`Batch ${b.no} of ${it.name}: ${qf(q)} ${it.unit} expired on ${dmy(b.exp)}. Do not sell. Write it off.`,btn:['Write off',`writeOff('${b.id}')`]});
+  else if(b.exp&&b.exp<=warn)out.push({lvl:'amber',type:'Expiring soon',text:`Batch ${b.no} of ${it.name}: ${qf(q)} ${it.unit} expires on ${dmy(b.exp)}. Sell this first.`})}
+ for(const o of S.orders){const [lab,c]=orderStatus(o);if(c==='red')out.push({lvl:'amber',type:'Overdue order',text:`${o.no} for ${o.party.name} was due ${dmy(o.due)}.`,btn:['Make invoice',`saleFromOrder('${o.id}')`]})}
+ moneyAlerts(out);
+ for(const x of belowCost().slice(0,5))out.push({lvl:'red',type:'Sold below cost',text:`${x.s.no} (${dmy(x.s.date)}): ${x.l.name} sold at ${money(x.net)} per unit, cost ${money(x.c)}. Check the rate or discount.`,btn:['Profit page',"go('profit')"]});
+ {const q60=itemQtySold(addDays(t,-59),t);for(const it of S.items.filter(i=>i.type==='Finished')){const q=st.it[it.id]||0;if(q>0&&!(q60[it.id]>0)&&S.sales.length)out.push({lvl:'amber',type:'Dead stock',text:`${it.name}: ${qf(q)} ${it.unit} in stock with no sale in 60 days. Offer a discount or bundle.`})}}
+ const lb=S.lastBackup;const days=lb?Math.floor((Date.now()-new Date(lb))/864e5):999;
+ if(!FH&&S.sales.length+S.purchases.length>0&&days>=(s.backupDays||7))out.push({lvl:'amber',type:'Backup due',text:lb?`Last backup was ${days} days ago.`:'No backup has been taken yet.',btn:['Back up now','backupNow()']});
+ if(FH&&AUTO_NEEDS)out.push({lvl:'amber',type:'Auto-backup paused',text:'Click to allow writing to your backup file again.',btn:['Reconnect','reconnectFH()']});
+ const ord={red:0,amber:1,grey:2};return out.sort((a,b)=>ord[a.lvl]-ord[b.lvl])}
+function closeBatch(id){const b=byId(S.batches,id);b.closed=true;commit('Batch closed')}
+function writeOff(id){const b=byId(S.batches,id);const q=stock().b[id]||0;if(q<=0)return;if(!confirm(`Write off ${q} units of batch ${b.no} as expired/damaged?`))return;postAdjust({date:today(),itemId:b.itemId,batchSel:id,qty:-q,reason:'Expired - written off'});b.closed=true;commit('Written off')}
+
+/* ---------- navigation ---------- */
+const PAGES=[['dash','🏠','Dashboard'],['sales','🧾','Sales invoices'],['orders','📋','Orders / backlog'],['purchases','🛒','Purchases'],['production','🏭','Production'],['returns','↩️','Returns'],['payments','💰','Payments & dues'],['bank','🏦','Bank statement'],['expenses','💸','Expenses (OpEx/CapEx)'],0,['stock','📦','Stock & batches'],['alerts','🔔','Alerts'],['demand','⚖️','Demand vs supply'],['reports','📊','GST & reports'],['profit','📈','Profit & break-even'],0,['items','🍬','Products'],['customers','👥','Customers'],['suppliers','🚚','Suppliers (goods)'],['vendors','🧰','Vendors (services)'],['parties','🔎','Party analysis'],0,['settings','⚙️','Settings & backup']];
+let PAGE='dash',D=null,TAB={};
+function go(p){PAGE=p;D=null;render();window.scrollTo(0,0)}
+function nav(){const n=alerts().filter(a=>a.lvl!=='grey').length;document.getElementById('nav').innerHTML=`<div class="brand">🫚 GingerBooks</div><div class="biz">${esc(S.settings.name||'Set up your business')}</div>`+
+ PAGES.map(p=>p?`<a class="${PAGE===p[0]?'on':''}" onclick="go('${p[0]}')"><span>${p[1]}</span>${p[2]}${p[0]==='alerts'&&n?`<span class="badge">${n}</span>`:''}</a>`:'<div class="sep"></div>').join('')}
+function render(){STK=null;nav();document.getElementById('main').innerHTML=(R[PAGE]||R.dash)()}
+const R={};
+const head=(t,btns)=>`<div class="row" style="margin-bottom:10px"><h1 style="margin:0">${t}</h1><span class="sp"></span>${btns||''}</div>`;
+const tabs=(key,list)=>{TAB[key]=TAB[key]||list[0][0];return `<div class="tabs">${list.map(([k,l])=>`<a class="${TAB[key]===k?'on':''}" onclick="TAB['${key}']='${k}';render()">${l}</a>`).join('')}</div>`};
+function pill(t,c){return `<span class="pill ${c}">${esc(t)}</span>`}
+function itemOpts(sel,types){return opt('','— choose —',sel)+S.items.filter(i=>!types||types.includes(i.type)||i.id===sel).map(i=>opt(i.id,i.name+(i.sku?' ('+i.sku+')':''),sel)).join('')}
+function stateOpts(sel){return opt('','— select state —',sel)+Object.entries(STATES).map(([c,n])=>opt(c,c+' - '+n,sel)).join('')}
+function batchOpts(itemId,sel){const st=stock(),t=today();return opt('auto','Auto: earliest expiry first',sel)+S.batches.filter(b=>b.itemId===itemId&&(!b.closed||b.id===sel)).map(b=>{const q=st.b[b.id]||0;return opt(b.id,`${b.no} · ${qf(q)} left${b.exp?' · exp '+dmy(b.exp):''}${b.exp&&b.exp<t?' · EXPIRED':''}`,sel)}).join('')}
+function noItemsHint(){return S.items.length?'':`<div class="banner">Add your products first in <a href="#" onclick="go('items');return false">Products</a>, or load sample data in <a href="#" onclick="go('settings');return false">Settings</a> to explore.</div>`}
+
+/* ---------- line editor shared by forms ---------- */
+function setD(k,v,re){D[k]=v;if(re)render();else liveTotals()}
+function setL(i,k,v,re){const l=D.lines[i];l[k]=['qty','rate','disc','gst','margin'].includes(k)?(parseFloat(v)||0):v;
+ if(k==='itemId'){const it=byId(S.items,v);if(it){l.gst=+it.gst||0;l.batchSel='auto';
+  if(D.kind==='purchase'){l.rate=+it.cost||0;l.mfg=l.mfg||D.date;l.exp=it.shelfDays?addDays(l.mfg,it.shelfDays):'';l.batchNo=l.batchNo||autoBatch(D.date)}else{l.rate=+it.price||0;if(D.kind==='sale'){const c=byId(S.customers,D.customerId);l.disc=c?+c.disc||0:0}}}}
+ if(k==='margin'){const c=unitCostNow(l.itemId);const dsc=1-(+l.disc||0)/100;if(c&&dsc>0)l.rate=r2(c*(1+(+v||0)/100)/dsc);const el=document.getElementById('rt'+i);if(el)el.value=l.rate;delete l.margin}
+ if(k==='mfg'&&D.kind==='purchase'){const it=byId(S.items,l.itemId);if(it&&it.shelfDays)l.exp=addDays(v,it.shelfDays);re=1}
+ if(re)render();else liveTotals()}
+function addLine(x){D.lines.push(x||{itemId:'',batchSel:'auto',qty:1,rate:0,disc:0,gst:5});render()}
+function delLine(i){D.lines.splice(i,1);if(!D.lines.length)addLine();else render()}
+function draftInter(){if(D.kind==='purchase'){const s=byId(S.suppliers,D.supplierId);return !!(s&&s.state&&s.state!==S.settings.state)}return D.pos!==S.settings.state}
+function totalsBox(t,inter,label){return `<div class="tot"><div><span>Taxable value</span><b>${money(t.taxable)}</b></div>${inter?`<div><span>IGST</span><span>${money(t.igst)}</span></div>`:`<div><span>CGST</span><span>${money(t.cgst)}</span></div><div><span>SGST</span><span>${money(t.sgst)}</span></div>`}<div><span>Round off</span><span>${f2(t.roundOff)}</span></div><div class="big"><span>${label||'Invoice total'}</span><span>${money(t.total)}</span></div></div>`}
+function liveTotals(){const el=document.getElementById('totals');if(!el)return;const inter=draftInter();const ls=D.lines.map(l=>({...l}));const t=calcLines(ls,inter);ls.forEach((l,i)=>{const c=document.getElementById('amt'+i);if(c)c.textContent=f2(l.total);const m=document.getElementById('mg'+i);if(m&&document.activeElement!==m)m.value=lineMargin(l)??''});el.innerHTML=totalsBox(t,inter,D.kind==='purchase'?'Bill total':null)+(D.kind==='sale'?marginBox(ls):'')}
+const num=(i,k,v,w,idp)=>`<input type="number" step="any" min="0" style="width:${w||85}px" value="${v??''}" ${idp?'id="'+idp+i+'"':''} oninput="setL(${i},'${k}',this.value)">`;
+const gstSel=(i,v)=>`<select style="width:75px" onchange="setL(${i},'gst',this.value)">${RATES.map(r=>opt(r,r+'%',v)).join('')}</select>`;
+
+/* ================= DASHBOARD ================= */
+function salesBetween(a,b){return S.sales.filter(s=>!s.cancelled&&s.date>=a&&s.date<=b)}
+function sum(arr,f){return arr.reduce((s,x)=>s+(typeof f==='function'?f(x):x[f]||0),0)}
+function itemQtySold(a,b){const m={};for(const s of salesBetween(a,b))for(const l of s.lines){m[l.itemId]=(m[l.itemId]||0)+l.qty}for(const r of S.salesReturns.filter(r=>!r.cancelled&&r.date>=a&&r.date<=b))for(const l of r.lines)m[l.itemId]=(m[l.itemId]||0)-l.qty;return m}
+R.dash=()=>{const t=today(),m0=t.slice(0,8)+'01',fy0=fyStart(t);const st=stock();
+ const tdS=salesBetween(t,t),mS=salesBetween(m0,t);const mCN=S.salesReturns.filter(r=>!r.cancelled&&r.date>=m0&&r.date<=t);
+ const mP=S.purchases.filter(p=>!p.cancelled&&p.date>=m0&&p.date<=t),mDN=S.purchaseReturns.filter(r=>!r.cancelled&&r.date>=m0&&r.date<=t);
+ const outTax=sum(mS,s=>s.cgst+s.sgst+s.igst)-sum(mCN,s=>s.cgst+s.sgst+s.igst),itc=sum(mP,s=>s.cgst+s.sgst+s.igst)-sum(mDN,s=>s.cgst+s.sgst+s.igst);
+ const openOrders=S.orders.filter(o=>orderStatus(o)[1]==='amber'||orderStatus(o)[1]==='red');
+ // 30 day trend
+ const days=[];for(let i=29;i>=0;i--){const d=addDays(t,-i);days.push({d,v:sum(salesBetween(d,d),'total')})}
+ const max=Math.max(1,...days.map(x=>x.v));const last7=sum(days.slice(23),'v'),prev7=sum(days.slice(16,23),'v');const ch=prev7?((last7-prev7)/prev7*100):null;
+ const bars=days.map((x,i)=>{const h=Math.round(x.v/max*120);return `<rect class="bar" x="${i*20+2}" y="${130-h}" width="16" height="${h}" rx="2"><title>${dmy(x.d)}: ${money0(x.v)}</title></rect>`}).join('');
+ const labels=[0,7,14,21,29].map(i=>`<text x="${i*20+10}" y="146" font-size="10" text-anchor="middle" fill="#7a6a5a">${days[i].d.slice(8)}/${days[i].d.slice(5,7)}</text>`).join('');
+ // fast movers
+ const q30=itemQtySold(addDays(t,-29),t),qPrev=itemQtySold(addDays(t,-59),addDays(t,-30));
+ const spk=trendSpikes();
+ const fast=Object.entries(q30).filter(([,q])=>q>0).sort((a,b)=>b[1]-a[1]).slice(0,6);const fmax=fast.length?fast[0][1]:1;
+ const fastHtml=fast.length?fast.map(([id,q])=>{const it=byId(S.items,id)||{name:'?',unit:''};const p=qPrev[id]||0;const tr=p?Math.round((q-p)/p*100):null;const cover=q?Math.floor((st.it[id]||0)/(q/30)):null;
+  return `<tr><td>${esc(it.name)}${spk[id]?` <span class="pill amber" title="Last 3 days selling ${spk[id]}× the usual rate">🔥 ${spk[id]}×</span>`:''}<div class="hbar"><i style="width:${Math.round(q/fmax*100)}%"></i></div></td><td class="n">${qf(q)} ${esc(it.unit)}<div class="mut">${r2(q/30)}/day</div></td><td class="n">${tr===null?'<span class="mut">new</span>':`<span class="${tr>=0?'up':'dn'}">${tr>=0?'▲':'▼'} ${Math.abs(tr)}%</span>`}</td><td class="n">${cover===null?'':cover<=0?'<span class="dn">out of stock</span>':cover+' days'}</td></tr>`}).join(''):'<tr><td class="mut">No sales in the last 30 days.</td></tr>';
+ const slow=S.items.filter(i=>i.type==='Finished'&&(st.it[i.id]||0)>0&&!(q30[i.id]>0)&&!(qPrev[i.id]>0));
+ // suppliers
+ const sup={};for(const p of S.purchases.filter(p=>!p.cancelled&&p.date>=fy0)){const k=p.party.name;sup[k]=sup[k]||{v:0,n:0};sup[k].v+=p.total;sup[k].n++}
+ for(const r of S.purchaseReturns.filter(r=>!r.cancelled&&r.date>=fy0)){const k=r.party.name;if(sup[k]){sup[k].ret=(sup[k].ret||0)+r.total}}
+ const topSup=Object.entries(sup).sort((a,b)=>b[1].v-a[1].v).slice(0,5);
+ const cus={};for(const s of salesBetween(fy0,t)){const k=s.party.name;cus[k]=(cus[k]||0)+s.total}const topCus=Object.entries(cus).sort((a,b)=>b[1]-a[1]).slice(0,5);
+ // returns
+ const r90=S.salesReturns.filter(r=>!r.cancelled&&r.date>=addDays(t,-89));const s90=sum(salesBetween(addDays(t,-89),t),'total');const rv=sum(r90,'total');
+ const reasons={};for(const r of r90){const k=r.reason||'Not given';reasons[k]=(reasons[k]||0)+r.total}
+ const retItems={};for(const r of r90)for(const l of r.lines)retItems[l.name]=(retItems[l.name]||0)+l.qty;
+ const al=alerts();
+ return head('Dashboard',`<span class="mut">Updated ${new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}</span><button class="btn" onclick="newSale()">+ New invoice</button>`)+noItemsHint()+
+ `<div class="grid">
+  <div class="card kpi"><div class="l">Today's sales</div><div class="v">${money0(sum(tdS,'total'))}</div><div class="s">${tdS.length} invoice(s)</div></div>
+  <div class="card kpi"><div class="l">Sales this month</div><div class="v">${money0(sum(mS,'total'))}</div><div class="s">${mS.length} invoices · returns ${money0(sum(mCN,'total'))}</div></div>
+  <div class="card kpi"><div class="l">GST payable this month (est.)</div><div class="v">${money0(Math.max(0,outTax-itc))}</div><div class="s">Output ${money0(outTax)} − ITC ${money0(itc)}</div></div>
+  <div class="card kpi"><div class="l">Pending orders</div><div class="v">${openOrders.length}</div><div class="s">${openOrders.filter(o=>orderStatus(o)[1]==='red').length} overdue</div></div>
+  <div class="card kpi"><div class="l">Money to collect</div><div class="v">${money0(totalDues())}</div><div class="s">${pendingCheques().length} cheque/DD awaiting clearance</div></div>
+  <div class="card kpi"><div class="l">Profit this month (est.)</div><div class="v">${money0(pnl(m0,t).net)}</div><div class="s">Expenses ${money0(pnl(m0,t).opex)}</div></div>
+  <div class="card kpi"><div class="l">Stock value (at cost)</div><div class="v">${money0(stockValue())}</div><div class="s">${S.batches.filter(b=>(st.b[b.id]||0)>0).length} live batches</div></div>
+ </div>
+ <div class="card scroll"><h2>Sales across periods</h2>${timeframeTable()}</div>
+ <div class="grid2"><div class="card"><h2>This month vs target</h2>${targetBox()}</div><div class="card"><h2>How customers paid (this month)</h2>${donut(payMix(m0,t))}</div></div>
+ ${al.filter(a=>a.lvl!=='grey').length?`<div class="card"><div class="row"><h2 style="margin:0">Needs attention</h2><span class="sp"></span><a href="#" onclick="go('alerts');return false">See all ${al.length} alerts</a></div>${al.filter(a=>a.lvl!=='grey').slice(0,5).map(alertRow).join('')}</div>`:''}
+ <div class="grid2">
+  <div class="card"><div class="row"><h2 style="margin:0">Sales trend, last 30 days</h2><span class="sp"></span>${ch===null?'':`<span class="${ch>=0?'up':'dn'}">${ch>=0?'▲':'▼'} ${Math.abs(Math.round(ch))}% vs previous week</span>`}</div>
+   <svg viewBox="0 0 600 150" width="100%" style="margin-top:8px">${bars}${labels}</svg></div>
+  <div class="card"><h2>Fast-moving products (30 days)</h2><table><tr><th>Product</th><th class="n">Sold</th><th class="n">Trend</th><th class="n">Stock lasts</th></tr>${fastHtml}</table>
+   ${slow.length?`<div class="mut" style="margin-top:8px">Not moving for 60 days: ${slow.map(i=>esc(i.name)).join(', ')}</div>`:''}</div>
+  <div class="card"><h2>Top suppliers (this financial year)</h2><table><tr><th>Supplier</th><th class="n">Bills</th><th class="n">Purchased</th><th class="n">Returned</th></tr>${topSup.length?topSup.map(([n,v])=>`<tr><td>${esc(n)}</td><td class="n">${v.n}</td><td class="n">${money0(v.v)}</td><td class="n">${v.ret?money0(v.ret):'-'}</td></tr>`).join(''):'<tr><td class="mut">No purchases yet.</td></tr>'}</table>
+   <h2 style="margin-top:14px">Top customers (this financial year)</h2><table>${topCus.length?topCus.map(([n,v])=>`<tr><td>${esc(n)}</td><td class="n">${money0(v)}</td></tr>`).join(''):'<tr><td class="mut">No sales yet.</td></tr>'}</table></div>
+  <div class="card"><h2>Returns (last 90 days)</h2><div class="grid"><div class="kpi"><div class="l">Credit notes</div><div class="v">${r90.length}</div></div><div class="kpi"><div class="l">Value</div><div class="v">${money0(rv)}</div></div><div class="kpi"><div class="l">Return rate</div><div class="v">${s90?r2(rv/s90*100):0}%</div></div></div>
+   <table style="margin-top:8px"><tr><th>Reason</th><th class="n">Value</th></tr>${Object.entries(reasons).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td>${esc(k)}</td><td class="n">${money0(v)}</td></tr>`).join('')||'<tr><td class="mut">No returns.</td></tr>'}</table>
+   ${Object.keys(retItems).length?`<div class="mut" style="margin-top:6px">Most returned: ${Object.entries(retItems).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([n,q])=>esc(n)+' ('+qf(q)+')').join(', ')}</div>`:''}</div>
+ </div>`};
+function alertRow(a){return `<div class="alert ${a.lvl}"><b>${esc(a.type)}</b><span>${esc(a.text)}</span><span class="sp"></span>${a.btn?`<button class="btn s o" onclick="${a.btn[1]}">${esc(a.btn[0])}</button>`:''}</div>`}
+
+/* ================= SALES ================= */
+function newSale(){if(!S.items.length){go('items');toast('Add a product first');return}PAGE='sales';D={kind:'sale',date:today(),customerId:'',walkinName:'',pos:S.settings.state,payMode:'Cash',orderId:'',notes:'',lines:[{itemId:'',batchSel:'auto',qty:1,rate:0,disc:0,gst:5}]};render()}
+function saleFromOrder(id){const o=byId(S.orders,id);newSale();D.customerId=o.customerId;D.walkinName=o.customerId?'':o.party.name;const c=byId(S.customers,o.customerId);D.pos=(c&&c.state)||S.settings.state;D.orderId=o.id;
+ D.lines=orderProgress(o).filter(l=>l.pending>0).map(l=>{const it=byId(S.items,l.itemId)||{};return{itemId:l.itemId,batchSel:'auto',qty:l.pending,rate:l.rate||+it.price||0,disc:0,gst:+it.gst||0}});if(!D.lines.length)D.lines=[{itemId:'',batchSel:'auto',qty:1,rate:0,disc:0,gst:5}];render()}
+function pickCust(id){D.customerId=id;const c=byId(S.customers,id);D.pos=(c&&c.state)||S.settings.state;const dd=c?+c.disc||0:0;D.lines.forEach(l=>l.disc=dd);if(dd)toast('Customer default discount '+dd+'% applied');render()}
+R.sales=()=>{if(D&&D.kind==='sale')return saleForm();const rows=[...S.sales].reverse();const cnBy={};for(const r of S.salesReturns)if(!r.cancelled)cnBy[r.invoiceId]=(cnBy[r.invoiceId]||0)+r.total;
+ return head('Sales invoices','<button class="btn" onclick="newSale()">+ New invoice</button>')+noItemsHint()+`<div class="card"><input placeholder="Search by invoice number, customer, product…" oninput="filt(this,'tS')" style="max-width:420px;margin-bottom:8px"><div class="scroll"><table id="tS"><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Products</th><th class="n">Taxable</th><th class="n">GST</th><th class="n">Total</th><th>Status</th><th></th></tr>
+ ${rows.map(s=>`<tr><td><b>${esc(s.no)}</b></td><td>${dmy(s.date)}</td><td>${esc(s.party.name)}${s.party.gstin?`<div class="mut">${esc(s.party.gstin)}</div>`:''}</td><td>${s.lines.map(l=>esc(l.name)+' × '+qf(l.qty)).join('<br>')}</td><td class="n">${f2(s.taxable)}</td><td class="n">${f2(s.cgst+s.sgst+s.igst)}</td><td class="n"><b>${f2(s.total)}</b></td>
+ <td>${s.cancelled?pill('Cancelled','grey'):cnBy[s.id]?pill('Returned '+money0(cnBy[s.id]),'amber'):pill(s.payMode,'green')}</td><td style="white-space:nowrap"><button class="btn s o" onclick="printDoc('sale','${s.id}')">🖨 Print / PDF</button>${s.cancelled?'':`<button class="btn s o" onclick="cancelSale('${s.id}')">Cancel</button>`}</td></tr>`).join('')||'<tr><td colspan="9" class="mut">No invoices yet. Click “New invoice”.</td></tr>'}</table></div></div>`};
+function saleForm(){const inter=draftInter();const ls=D.lines.map(l=>({...l}));const t=calcLines(ls,inter);const o=D.orderId&&byId(S.orders,D.orderId);
+ return head('New sales invoice')+(S.settings.state?'':`<div class="banner red">Set your business state in Settings first, so the app knows whether to charge CGST+SGST or IGST.</div>`)+(o?`<div class="banner">Invoice against order <b>${esc(o.no)}</b>. Pending quantities are filled in.</div>`:'')+
+ `<div class="card"><div class="f">
+ <div><label>Invoice date</label><input type="date" value="${D.date}" onchange="setD('date',this.value,1)"></div>
+ <div><label>Customer</label><select onchange="pickCust(this.value)">${opt('','Walk-in / cash customer',D.customerId)}${S.customers.map(c=>opt(c.id,c.name+(c.gstin?' · '+c.gstin:''),D.customerId)).join('')}</select><a href="#" class="mut" onclick="go('customers');return false">+ add a customer</a></div>
+ ${D.customerId?'':`<div><label>Customer name (optional)</label><input value="${esc(D.walkinName)}" oninput="D.walkinName=this.value"></div>`}
+ <div><label>Place of supply (state)</label><select onchange="setD('pos',this.value,1)">${stateOpts(D.pos)}</select></div>
+ <div><label>Payment received now</label><select onchange="D.payMode=this.value;render()">${PAYMODES.map(x=>opt(x,x,D.payMode)).join('')}</select></div>
+ ${/^Credit|^Cash/.test(D.payMode)?'':`<div><label>${D.payMode==='UPI'?'UPI reference no.':D.payMode==='Cheque'?'Cheque no. & bank':D.payMode==='Demand draft'?'DD no. & bank':'Reference no.'}</label><input value="${esc(D.payRef||'')}" oninput="D.payRef=this.value"></div>`}
+ </div><div class="mut">${inter?'Customer is in another state: IGST will be charged.':'Customer is in your state: CGST + SGST will be charged.'}</div></div>
+ <div class="card scroll"><table class="lines"><tr><th style="min-width:200px">Product</th><th style="min-width:210px">Batch</th><th>Qty</th><th>Rate (before GST)</th><th>Disc %</th><th title="Profit over cost after discount">Margin %</th><th>GST</th><th class="n">Amount</th><th></th></tr>
+ ${D.lines.map((l,i)=>{const av=l.itemId?available(l.itemId):0;const it=byId(S.items,l.itemId);return `<tr><td><select onchange="setL(${i},'itemId',this.value,1)">${itemOpts(l.itemId)}</select>${l.itemId?`<div class="mut" style="font-size:12px">In stock (not expired): ${qf(av)} ${esc(it.unit)}</div>`:''}</td>
+ <td>${l.itemId?`<select onchange="setL(${i},'batchSel',this.value)">${batchOpts(l.itemId,l.batchSel)}</select>`:''}</td><td>${num(i,'qty',l.qty,75)}</td><td>${num(i,'rate',l.rate,95,'rt')}</td><td>${num(i,'disc',l.disc,60)}</td><td><input type="number" step="any" style="width:70px" id="mg${i}" value="${lineMargin(ls[i])??''}" ${l.itemId&&unitCostNow(l.itemId)?'':'disabled title="Enter product cost in Products to use margin"'} oninput="setL(${i},'margin',this.value)"></td><td>${gstSel(i,l.gst)}</td><td class="n" id="amt${i}">${f2(ls[i].total)}</td><td><button class="btn s o" onclick="delLine(${i})" title="Remove">✕</button></td></tr>`}).join('')}
+ </table><div class="row"><button class="btn s o" onclick="addLine()">+ Add another product</button><span class="sp"></span><span class="mut">Same discount on all lines:</span><input type="number" step="any" style="width:80px" placeholder="%" onchange="D.lines.forEach(l=>l.disc=+this.value||0);render()"><span class="mut">Same margin on all lines:</span><input type="number" step="any" style="width:80px" placeholder="%" onchange="D.lines.forEach((l,i)=>setL(i,'margin',this.value));render()"></div>
+ <div id="totals" style="margin-top:10px">${totalsBox(t,inter)}${marginBox(ls)}</div>
+ <div style="margin-top:10px"><label>Notes on invoice (optional)</label><input value="${esc(D.notes)}" oninput="D.notes=this.value"></div></div>
+ <div class="row"><button class="btn" onclick="saveSale(true)">Save & print</button><button class="btn o" onclick="saveSale(false)">Save</button><button class="btn o" onclick="go('sales')">Discard</button></div>`}
+function saleShortages(d){const need={},msgs=[];const st=stock();for(const l of d.lines){if(!l.itemId||!(+l.qty>0))continue;
+  if(l.batchSel&&l.batchSel!=='auto'){const b=byId(S.batches,l.batchSel);const q=st.b[l.batchSel]||0;if(+l.qty>q)msgs.push(`Batch ${b.no} has only ${qf(q)}; you are billing ${qf(l.qty)}.`);if(b.exp&&b.exp<today())msgs.push(`Batch ${b.no} is EXPIRED.`)}
+  else need[l.itemId]=(need[l.itemId]||0)+(+l.qty)}
+ for(const id in need){const av=available(id);if(need[id]>av){const it=byId(S.items,id);msgs.push(`${it.name}: only ${qf(av)} ${it.unit} in stock; billing ${qf(need[id])}.`)}}return msgs}
+function saveSale(print){const lines=D.lines.filter(l=>l.itemId&&+l.qty>0);if(!lines.length)return toast('Add at least one product with quantity');if(!D.pos)return toast('Choose the place of supply');
+ if(!S.settings.state)return toast('Set your business state in Settings first');
+ const sh=saleShortages(D);if(sh.length&&!confirm('Stock warning:\n\n'+sh.join('\n')+'\n\nSave anyway? Stock will go negative and appear in Alerts.'))return;
+ const s=postSale(D);D=null;commit('Invoice '+s.no+' saved');if(print)printDoc('sale',s.id)}
+function cancelSale(id){const s=byId(S.sales,id);if(S.salesReturns.some(r=>!r.cancelled&&r.invoiceId===id))return alert('This invoice has a credit note. Cancel the credit note first.');
+ if(!confirm(`Cancel invoice ${s.no}? The number stays used and is reported as cancelled. Stock goes back.`))return;s.cancelled=true;s.cancelledOn=today();removeMoves(id);for(const r of S.receipts){if(r.auto&&r.allocs.length===1&&r.allocs[0].saleId===id)r.cancelled=true;else r.allocs=r.allocs.filter(a=>a.saleId!==id)}commit('Invoice cancelled')}
+
+/* ================= ORDERS ================= */
+function newOrder(){if(!S.items.length){go('items');return}PAGE='orders';D={kind:'order',date:today(),due:addDays(today(),7),customerId:'',walkinName:'',notes:'',pos:S.settings.state,lines:[{itemId:'',qty:1,rate:0,gst:5}]};render()}
+R.orders=()=>{if(D&&D.kind==='order')return orderForm();const show=TAB.ord||'open';
+ const list=[...S.orders].reverse().filter(o=>{const c=orderStatus(o)[1];return show==='all'||(show==='open'?(c==='amber'||c==='red'):!(c==='amber'||c==='red'))});
+ return head('Orders / backlog','<button class="btn" onclick="newOrder()">+ New order</button>')+tabs('ord',[['open','Pending'],['done','Completed / closed'],['all','All']])+
+ `<div class="card scroll"><table><tr><th>Order</th><th>Date</th><th>Due</th><th>Customer</th><th>Products: ordered / delivered / pending</th><th>Status</th><th></th></tr>${list.map(o=>{const [lab,c]=orderStatus(o);const p=orderProgress(o);
+ return `<tr><td><b>${esc(o.no)}</b></td><td>${dmy(o.date)}</td><td>${dmy(o.due)}</td><td>${esc(o.party.name)}</td><td>${p.map(l=>`${esc((byId(S.items,l.itemId)||{}).name)}: ${qf(l.qty)} / ${qf(l.delivered)} / <b>${qf(l.pending)}</b>`).join('<br>')}</td><td>${pill(lab,c)}</td>
+ <td style="white-space:nowrap">${c==='amber'||c==='red'?`<button class="btn s" onclick="saleFromOrder('${o.id}')">Make invoice</button><button class="btn s o" onclick="closeOrder('${o.id}','closed')">Close</button><button class="btn s o" onclick="closeOrder('${o.id}','cancelled')">Cancel</button>`:''}</td></tr>`}).join('')||'<tr><td colspan="7" class="mut">No orders here.</td></tr>'}</table></div>`};
+function orderForm(){return head('New customer order')+`<div class="card"><div class="f"><div><label>Order date</label><input type="date" value="${D.date}" onchange="D.date=this.value"></div><div><label>Deliver by</label><input type="date" value="${D.due}" onchange="D.due=this.value"></div>
+ <div><label>Customer</label><select onchange="D.customerId=this.value;render()">${opt('','Walk-in / other',D.customerId)}${S.customers.map(c=>opt(c.id,c.name,D.customerId)).join('')}</select></div>${D.customerId?'':`<div><label>Customer name</label><input value="${esc(D.walkinName)}" oninput="D.walkinName=this.value"></div>`}</div></div>
+ <div class="card"><table class="lines"><tr><th style="min-width:220px">Product</th><th>Qty</th><th>Agreed rate (before GST)</th><th>In stock</th><th></th></tr>${D.lines.map((l,i)=>`<tr><td><select onchange="setL(${i},'itemId',this.value,1)">${itemOpts(l.itemId,['Finished','Packing'])}</select></td><td>${num(i,'qty',l.qty)}</td><td>${num(i,'rate',l.rate,100)}</td><td class="mut">${l.itemId?qf(available(l.itemId)):''}</td><td><button class="btn s o" onclick="delLine(${i})">✕</button></td></tr>`).join('')}</table>
+ <button class="btn s o" onclick="addLine({itemId:'',qty:1,rate:0,gst:5})">+ Add product</button><div style="margin-top:10px"><label>Notes</label><input value="${esc(D.notes)}" oninput="D.notes=this.value"></div></div>
+ <div class="row"><button class="btn" onclick="saveOrder()">Save order</button><button class="btn o" onclick="go('orders')">Discard</button></div>`}
+function saveOrder(){if(!D.lines.some(l=>l.itemId&&+l.qty>0))return toast('Add at least one product');const o=postOrder(D);D=null;commit('Order '+o.no+' saved')}
+function closeOrder(id,st){const o=byId(S.orders,id);if(!confirm(st==='cancelled'?`Cancel order ${o.no}?`:`Close order ${o.no}? Remaining quantities will no longer count as pending.`))return;o.status=st;commit('Order updated')}
+
+/* ================= PURCHASES ================= */
+function newPurchase(){if(!S.items.length){go('items');return}PAGE='purchases';D={kind:'purchase',date:today(),supplierId:'',supInvNo:'',supInvDate:today(),lines:[{itemId:'',batchNo:'',mfg:today(),exp:'',qty:1,rate:0,gst:5}]};render()}
+R.purchases=()=>{if(D&&D.kind==='purchase')return purchaseForm();const rows=[...S.purchases].reverse();
+ return head('Purchases','<button class="btn" onclick="newPurchase()">+ New purchase</button>')+noItemsHint()+`<div class="card"><input placeholder="Search…" oninput="filt(this,'tP')" style="max-width:420px;margin-bottom:8px"><div class="scroll"><table id="tP"><tr><th>Entry</th><th>Date</th><th>Supplier</th><th>Supplier bill</th><th>Items & batches</th><th class="n">Taxable</th><th class="n">GST (ITC)</th><th class="n">Total</th><th></th></tr>
+ ${rows.map(p=>`<tr><td><b>${esc(p.no)}</b>${p.cancelled?' '+pill('Cancelled','grey'):''}</td><td>${dmy(p.date)}</td><td>${esc(p.party.name)}${p.party.gstin?`<div class="mut">${esc(p.party.gstin)}</div>`:''}</td><td>${esc(p.supInvNo)}<div class="mut">${dmy(p.supInvDate)}</div></td><td>${p.lines.map(l=>`${esc(l.name)} × ${qf(l.qty)} <span class="mut">[${esc(l.batchText)}]</span>`).join('<br>')}</td><td class="n">${f2(p.taxable)}</td><td class="n">${f2(p.cgst+p.sgst+p.igst)}</td><td class="n"><b>${f2(p.total)}</b></td><td>${p.cancelled?'':`<button class="btn s o" onclick="cancelPurchase('${p.id}')">Cancel</button>`}</td></tr>`).join('')||'<tr><td colspan="9" class="mut">No purchases yet.</td></tr>'}</table></div></div>`};
+function purchaseForm(){const inter=draftInter();const ls=D.lines.map(l=>({...l}));const t=calcLines(ls,inter);
+ return head('New purchase (goods received)')+`<div class="card"><div class="f"><div><label>Received on</label><input type="date" value="${D.date}" onchange="D.date=this.value"></div>
+ <div><label>Supplier</label><select onchange="D.supplierId=this.value;render()">${opt('','— choose —',D.supplierId)}${S.suppliers.map(c=>opt(c.id,c.name+(c.gstin?' · '+c.gstin:''),D.supplierId)).join('')}</select><a href="#" class="mut" onclick="go('suppliers');return false">+ add a supplier</a></div>
+ <div><label>Supplier bill number</label><input value="${esc(D.supInvNo)}" oninput="D.supInvNo=this.value"></div><div><label>Supplier bill date</label><input type="date" value="${D.supInvDate}" onchange="D.supInvDate=this.value"></div></div>
+ <div class="mut">${inter?'Supplier is in another state: IGST input credit.':'Same state: CGST + SGST input credit.'}</div></div>
+ <div class="card scroll"><table class="lines"><tr><th style="min-width:190px">Item</th><th>Batch no.</th><th>Mfg date</th><th>Expiry date</th><th>Qty</th><th>Rate (before GST)</th><th>GST</th><th class="n">Amount</th><th></th></tr>
+ ${D.lines.map((l,i)=>`<tr><td><select onchange="setL(${i},'itemId',this.value,1)">${itemOpts(l.itemId)}</select></td><td><input style="width:110px" value="${esc(l.batchNo)}" oninput="setL(${i},'batchNo',this.value)" placeholder="auto"></td>
+ <td><input type="date" value="${l.mfg||''}" onchange="setL(${i},'mfg',this.value,1)"></td><td><input type="date" value="${l.exp||''}" onchange="setL(${i},'exp',this.value)"></td><td>${num(i,'qty',l.qty,80)}</td><td>${num(i,'rate',l.rate,95)}</td><td>${gstSel(i,l.gst)}</td><td class="n" id="amt${i}">${f2(ls[i].total)}</td><td><button class="btn s o" onclick="delLine(${i})">✕</button></td></tr>`).join('')}
+ </table><button class="btn s o" onclick="addLine({itemId:'',batchNo:'',mfg:D.date,exp:'',qty:1,rate:0,gst:5})">+ Add item</button><div id="totals" style="margin-top:10px">${totalsBox(t,inter,'Bill total')}</div></div>
+ <div class="row"><button class="btn" onclick="savePurchase()">Save purchase</button><button class="btn o" onclick="go('purchases')">Discard</button></div>`}
+function savePurchase(){if(!D.lines.some(l=>l.itemId&&+l.qty>0))return toast('Add at least one item');if(!D.supplierId&&!confirm('No supplier chosen. Save anyway? (ITC cannot be claimed without supplier GSTIN)'))return;const p=postPurchase(D);D=null;commit('Purchase '+p.no+' saved; stock added')}
+function cancelPurchase(id){const p=byId(S.purchases,id);if(S.purchaseReturns.some(r=>!r.cancelled&&r.purchaseId===id))return alert('Cancel the purchase return (debit note) first.');if(!confirm(`Cancel purchase ${p.no}? Its stock will be removed.`))return;p.cancelled=true;removeMoves(id);commit('Purchase cancelled')}
+
+/* ================= PRODUCTION ================= */
+function newProduction(){const fin=S.items.filter(i=>i.type==='Finished');if(!fin.length){go('items');toast('Add a finished product first');return}PAGE='production';D={kind:'production',date:today(),itemId:fin[0].id,qty:0,batchNo:autoBatch(today()),exp:'',notes:'',inputs:[{itemId:'',qty:0}]};render()}
+R.production=()=>{if(D&&D.kind==='production')return prodForm();const rows=[...S.production].reverse();
+ return head('Production','<button class="btn" onclick="newProduction()">+ Record production</button>')+`<div class="card mut">Record each cooking/packing run here. Finished stock is added as a new batch with its expiry date, and raw materials used are taken out of stock.</div><div class="card scroll"><table><tr><th>Entry</th><th>Date</th><th>Product</th><th class="n">Qty made</th><th>Batch</th><th>Expiry</th><th>Materials used</th><th class="n">Cost/unit</th><th></th></tr>
+ ${rows.map(p=>{const it=byId(S.items,p.itemId)||{};return `<tr><td><b>${esc(p.no)}</b>${p.cancelled?' '+pill('Cancelled','grey'):''}</td><td>${dmy(p.date)}</td><td>${esc(it.name)}</td><td class="n">${qf(p.qty)} ${esc(it.unit)}</td><td>${esc(p.batchNo)}</td><td>${dmy(p.exp)}</td><td>${p.inputs.map(x=>{const r=byId(S.items,x.itemId)||{};return esc(r.name)+' '+qf(x.qty)+' '+esc(r.unit)}).join('<br>')||'-'}</td><td class="n">${p.unitCost?f2(p.unitCost):'-'}</td><td>${p.cancelled?'':`<button class="btn s o" onclick="cancelProd('${p.id}')">Cancel</button>`}</td></tr>`}).join('')||'<tr><td colspan="9" class="mut">No production recorded yet.</td></tr>'}</table></div>`};
+function prodForm(){const it=byId(S.items,D.itemId);const exp=D.exp||(it&&it.shelfDays?addDays(D.date,it.shelfDays):'');
+ return head('Record production')+`<div class="card"><div class="f"><div><label>Date made</label><input type="date" value="${D.date}" onchange="D.date=this.value;D.batchNo=autoBatch(this.value);D.exp='';render()"></div>
+ <div><label>Product made</label><select onchange="D.itemId=this.value;D.exp='';render()">${itemOpts(D.itemId,['Finished'])}</select></div><div><label>Quantity made (${esc(it?it.unit:'')})</label><input type="number" step="any" value="${D.qty||''}" oninput="D.qty=+this.value"></div>
+ <div><label>Batch number</label><input value="${esc(D.batchNo)}" oninput="D.batchNo=this.value"></div><div><label>Best before / expiry</label><input type="date" value="${exp}" onchange="D.exp=this.value"><div class="mut" style="font-size:12px">${it&&it.shelfDays?'Auto: '+it.shelfDays+' days shelf life':'Set shelf life in Products to fill this automatically'}</div></div></div></div>
+ <div class="card"><h2>Raw materials and packing used</h2><table class="lines"><tr><th style="min-width:220px">Material</th><th>Qty used</th><th>In stock</th><th></th></tr>${D.inputs.map((x,i)=>{const r=byId(S.items,x.itemId);return `<tr><td><select onchange="D.inputs[${i}].itemId=this.value;render()">${itemOpts(x.itemId,['Raw material','Packing'])}</select></td><td><input type="number" step="any" style="width:100px" value="${x.qty||''}" oninput="D.inputs[${i}].qty=+this.value"></td><td class="mut">${r?qf(available(r.id))+' '+esc(r.unit):''}</td><td><button class="btn s o" onclick="D.inputs.splice(${i},1);render()">✕</button></td></tr>`}).join('')}</table>
+ <button class="btn s o" onclick="D.inputs.push({itemId:'',qty:0});render()">+ Add material</button></div>
+ <div class="row"><button class="btn" onclick="saveProd()">Save production</button><button class="btn o" onclick="go('production')">Discard</button></div>`}
+function saveProd(){if(!D.itemId||!(D.qty>0))return toast('Enter the product and quantity made');const short=D.inputs.filter(x=>x.itemId&&x.qty>available(x.itemId)).map(x=>{const r=byId(S.items,x.itemId);return `${r.name}: need ${x.qty}, have ${available(x.itemId)}`});
+ if(short.length&&!confirm('Not enough raw material recorded:\n'+short.join('\n')+'\n\nSave anyway?'))return;const p=postProduction(D);D=null;commit('Production saved: batch '+p.batchNo)}
+function cancelProd(id){const p=byId(S.production,id);if(!confirm(`Cancel production ${p.no}? Finished stock is removed and materials are put back.`))return;p.cancelled=true;removeMoves(id);commit('Production cancelled')}
+
+/* ================= RETURNS ================= */
+R.returns=()=>{if(D&&D.kind==='sret')return sretForm();if(D&&D.kind==='pret')return pretForm();const tab=TAB.ret||'s';
+ const sr=[...S.salesReturns].reverse(),pr=[...S.purchaseReturns].reverse();
+ return head('Returns',tab==='s'?'<button class="btn" onclick="newSret()">+ Customer return (credit note)</button>':'<button class="btn" onclick="newPret()">+ Return to supplier (debit note)</button>')+tabs('ret',[['s','Sales returns (from customers)'],['p','Purchase returns (to suppliers)']])+
+ (tab==='s'?`<div class="card scroll"><table><tr><th>Credit note</th><th>Date</th><th>Against invoice</th><th>Customer</th><th>Items</th><th>Reason</th><th class="n">Value</th><th></th></tr>${sr.map(r=>`<tr><td><b>${esc(r.no)}</b>${r.cancelled?' '+pill('Cancelled','grey'):''}</td><td>${dmy(r.date)}</td><td>${esc(r.invoiceNo)}</td><td>${esc(r.party.name)}</td><td>${r.lines.map(l=>esc(l.name)+' × '+qf(l.qty)).join('<br>')}${r.restock?'':'<div class="mut">not restocked</div>'}</td><td>${esc(r.reason)}</td><td class="n">${f2(r.total)}</td><td style="white-space:nowrap"><button class="btn s o" onclick="printDoc('cn','${r.id}')">🖨 Print</button>${r.cancelled?'':`<button class="btn s o" onclick="cancelRet('salesReturns','${r.id}')">Cancel</button>`}</td></tr>`).join('')||'<tr><td colspan="8" class="mut">No customer returns.</td></tr>'}</table></div>`
+ :`<div class="card scroll"><table><tr><th>Debit note</th><th>Date</th><th>Against purchase</th><th>Supplier</th><th>Items</th><th>Reason</th><th class="n">Value</th><th></th></tr>${pr.map(r=>`<tr><td><b>${esc(r.no)}</b>${r.cancelled?' '+pill('Cancelled','grey'):''}</td><td>${dmy(r.date)}</td><td>${esc(r.purchaseNo)}<div class="mut">bill ${esc(r.supInvNo)}</div></td><td>${esc(r.party.name)}</td><td>${r.lines.map(l=>esc(l.name)+' × '+qf(l.qty)).join('<br>')}</td><td>${esc(r.reason)}</td><td class="n">${f2(r.total)}</td><td style="white-space:nowrap"><button class="btn s o" onclick="printDoc('dn','${r.id}')">🖨 Print</button>${r.cancelled?'':`<button class="btn s o" onclick="cancelRet('purchaseReturns','${r.id}')">Cancel</button>`}</td></tr>`).join('')||'<tr><td colspan="8" class="mut">No supplier returns.</td></tr>'}</table></div>`)};
+function newSret(){const inv=S.sales.filter(s=>!s.cancelled);if(!inv.length)return toast('No invoices to return against');PAGE='returns';TAB.ret='s';D={kind:'sret',date:today(),invoiceId:inv[inv.length-1].id,reason:'Damaged',restock:true,qty:{}};render()}
+function newPret(){const p=S.purchases.filter(s=>!s.cancelled);if(!p.length)return toast('No purchases to return against');PAGE='returns';TAB.ret='p';D={kind:'pret',date:today(),purchaseId:p[p.length-1].id,reason:'Quality issue',qty:{}};render()}
+function sretForm(){const inv=byId(S.sales,D.invoiceId);return head('Customer return: credit note')+`<div class="card"><div class="f"><div><label>Return date</label><input type="date" value="${D.date}" onchange="D.date=this.value"></div>
+ <div><label>Original invoice</label><select onchange="D.invoiceId=this.value;D.qty={};render()">${[...S.sales].reverse().filter(s=>!s.cancelled).map(s=>opt(s.id,s.no+' · '+dmy(s.date)+' · '+s.party.name+' · '+money0(s.total),D.invoiceId)).join('')}</select></div>
+ <div><label>Reason</label><select onchange="D.reason=this.value">${['Damaged','Expired / near expiry','Quality complaint','Wrong item sent','Excess supply','Other'].map(x=>opt(x,x,D.reason)).join('')}</select></div>
+ <div><label>&nbsp;</label><label style="color:var(--txt)"><input type="checkbox" ${D.restock?'checked':''} onchange="D.restock=this.checked"> Put returned goods back into stock (untick if damaged/expired)</label></div></div></div>
+ <div class="card"><table><tr><th>Product</th><th>Batch</th><th class="n">Billed</th><th class="n">Already returned</th><th>Return qty</th></tr>${inv.lines.map((l,i)=>{const done=returnedQty('salesReturns','invoiceId',inv.id,i);return `<tr><td>${esc(l.name)}</td><td class="mut">${esc(l.batchText)}</td><td class="n">${qf(l.qty)}</td><td class="n">${qf(done)}</td><td><input type="number" step="any" min="0" max="${l.qty-done}" style="width:100px" value="${D.qty[i]||''}" oninput="D.qty[${i}]=Math.min(+this.value,${r3(l.qty-done)})"></td></tr>`}).join('')}</table></div>
+ <div class="row"><button class="btn" onclick="saveSret()">Save credit note</button><button class="btn o" onclick="go('returns')">Discard</button></div>`}
+function pretForm(){const p=byId(S.purchases,D.purchaseId);const st=stock();return head('Return to supplier: debit note')+`<div class="card"><div class="f"><div><label>Return date</label><input type="date" value="${D.date}" onchange="D.date=this.value"></div>
+ <div><label>Original purchase</label><select onchange="D.purchaseId=this.value;D.qty={};render()">${[...S.purchases].reverse().filter(s=>!s.cancelled).map(s=>opt(s.id,s.no+' · '+dmy(s.date)+' · '+s.party.name+' · bill '+s.supInvNo,D.purchaseId)).join('')}</select></div>
+ <div><label>Reason</label><select onchange="D.reason=this.value">${['Quality issue','Damaged in transit','Wrong item','Excess quantity','Expired','Other'].map(x=>opt(x,x,D.reason)).join('')}</select></div></div></div>
+ <div class="card"><table><tr><th>Item</th><th>Batch</th><th class="n">Received</th><th class="n">Already returned</th><th class="n">Batch stock now</th><th>Return qty</th></tr>${p.lines.map((l,i)=>{const done=returnedQty('purchaseReturns','purchaseId',p.id,i);return `<tr><td>${esc(l.name)}</td><td>${esc(l.batchText)}</td><td class="n">${qf(l.qty)}</td><td class="n">${qf(done)}</td><td class="n">${qf(st.b[l.batchId]||0)}</td><td><input type="number" step="any" min="0" style="width:100px" value="${D.qty[i]||''}" oninput="D.qty[${i}]=Math.min(+this.value,${r3(l.qty-done)})"></td></tr>`}).join('')}</table></div>
+ <div class="row"><button class="btn" onclick="savePret()">Save debit note</button><button class="btn o" onclick="go('returns')">Discard</button></div>`}
+function saveSret(){const lines=Object.entries(D.qty).map(([i,q])=>({idx:+i,qty:+q})).filter(x=>x.qty>0);if(!lines.length)return toast('Enter a return quantity');const r=postSalesReturn({...D,lines});D=null;commit('Credit note '+r.no+' saved')}
+function savePret(){const lines=Object.entries(D.qty).map(([i,q])=>({idx:+i,qty:+q})).filter(x=>x.qty>0);if(!lines.length)return toast('Enter a return quantity');const r=postPurchaseReturn({...D,lines});D=null;commit('Debit note '+r.no+' saved')}
+function cancelRet(coll,id){const r=byId(S[coll],id);if(!confirm(`Cancel ${r.no}?`))return;r.cancelled=true;removeMoves(id);commit('Cancelled')}
+
+/* ================= STOCK ================= */
+R.stock=()=>{if(D&&D.kind==='adj')return adjForm();const st=stock(),t=today(),warn=addDays(t,S.settings.expiryWarnDays||30);const f=TAB.stk||'all';
+ const items=S.items.filter(i=>f==='all'||i.type===f);
+ return head('Stock & batches','<button class="btn o" onclick="newAdj(1)">+ Opening stock</button><button class="btn o" onclick="newAdj(-1)">Stock correction / wastage</button>')+tabs('stk',[['all','All'],['Finished','Finished goods'],['Raw material','Raw materials'],['Packing','Packing']])+noItemsHint()+
+ items.map(it=>{const q=st.it[it.id]||0;const bs=S.batches.filter(b=>b.itemId===it.id&&(!b.closed||(st.b[b.id]||0)!==0)).sort((a,b)=>(a.exp||'9999').localeCompare(b.exp||'9999'));const exp=bs.filter(b=>b.exp&&b.exp<t).reduce((s,b)=>s+Math.max(0,st.b[b.id]||0),0);
+  const status=q<0?pill('Negative','red'):(+it.reorder&&q<=+it.reorder)?pill('Low','amber'):pill('OK','green');
+  return `<div class="card"><div class="row"><h2 style="margin:0">${esc(it.name)}</h2><span class="mut">${esc(it.type)} · HSN ${esc(it.hsn)}</span><span class="sp"></span>${status}<b style="font-size:18px">${qf(q)} ${esc(it.unit)}</b></div>
+  ${exp?`<div class="dn" style="font-size:13px">${qf(exp)} ${esc(it.unit)} of this is expired</div>`:''}
+  ${bs.length?`<table style="margin-top:6px"><tr><th>Batch</th><th>Made / received</th><th>Expiry</th><th class="n">Qty</th><th class="n">Cost/unit</th><th>Status</th><th></th></tr>${bs.map(b=>{const bq=st.b[b.id]||0;const s=bq<0?pill('Negative','red'):bq===0?pill('Empty','grey'):b.exp&&b.exp<t?pill('Expired','red'):b.exp&&b.exp<=warn?pill('Expiring soon','amber'):pill('Good','green');
+   return `<tr><td>${esc(b.no)}</td><td>${dmy(b.mfg)}</td><td>${dmy(b.exp)}</td><td class="n">${qf(bq)}</td><td class="n">${b.cost?f2(b.cost):'-'}</td><td>${s}</td><td>${bq===0?`<button class="btn s o" onclick="closeBatch('${b.id}')">Close</button>`:''}${bq>0&&b.exp&&b.exp<t?`<button class="btn s o" onclick="writeOff('${b.id}')">Write off</button>`:''}</td></tr>`}).join('')}</table>`:'<div class="mut">No batches yet.</div>'}
+  ${q<0&&!bs.some(b=>(st.b[b.id]||0)<0)?`<div class="mut" style="font-size:13px">${qf(-Math.min(0,q-bs.reduce((s,b)=>s+(st.b[b.id]||0),0)))} sold without any batch in stock.</div>`:''}</div>`}).join('')};
+function newAdj(sign){if(!S.items.length){go('items');return}D={kind:'adj',sign,date:today(),itemId:S.items[0].id,batchSel:sign>0?'new':'',batchNo:'',mfg:today(),exp:'',qty:0,cost:'',reason:sign>0?'Opening stock':'Wastage / damage'};render()}
+function adjForm(){const it=byId(S.items,D.itemId);const bs=S.batches.filter(b=>b.itemId===D.itemId&&!b.closed);if(D.sign<0&&!D.batchSel&&bs.length)D.batchSel=bs[0].id;const st=stock();
+ return head(D.sign>0?'Add opening stock / stock found':'Stock correction / wastage')+`<div class="card"><div class="f"><div><label>Date</label><input type="date" value="${D.date}" onchange="D.date=this.value"></div>
+ <div><label>Item</label><select onchange="D.itemId=this.value;D.batchSel=D.sign>0?'new':'';render()">${itemOpts(D.itemId)}</select></div>
+ <div><label>Batch</label><select onchange="D.batchSel=this.value;render()">${D.sign>0?opt('new','New batch',D.batchSel):''}${bs.map(b=>opt(b.id,b.no+' · '+qf(st.b[b.id]||0)+' left'+(b.exp?' · exp '+dmy(b.exp):''),D.batchSel)).join('')}</select></div>
+ ${D.batchSel==='new'?`<div><label>Batch number</label><input value="${esc(D.batchNo)}" placeholder="auto" oninput="D.batchNo=this.value"></div><div><label>Mfg date</label><input type="date" value="${D.mfg}" onchange="D.mfg=this.value"></div><div><label>Expiry date</label><input type="date" value="${D.exp}" placeholder="auto" onchange="D.exp=this.value"><div class="mut" style="font-size:12px">${it&&it.shelfDays?'Blank = mfg + '+it.shelfDays+' days':''}</div></div><div><label>Cost per unit</label><input type="number" step="any" value="${D.cost}" oninput="D.cost=this.value"></div>`:''}
+ <div><label>Quantity ${D.sign>0?'to add':'to remove'} (${esc(it?it.unit:'')})</label><input type="number" step="any" min="0" value="${D.qty||''}" oninput="D.qty=+this.value"></div>
+ <div><label>Reason</label><select onchange="D.reason=this.value">${(D.sign>0?['Opening stock','Stock found in count','Other']:['Wastage / damage','Expired - written off','Samples / free','Stock count difference','Other']).map(x=>opt(x,x,D.reason)).join('')}</select></div></div></div>
+ <div class="row"><button class="btn" onclick="saveAdj()">Save</button><button class="btn o" onclick="go('stock')">Discard</button></div>`}
+function saveAdj(){if(!(D.qty>0))return toast('Enter a quantity');if(D.sign<0&&!D.batchSel)return toast('This item has no batch to reduce');postAdjust({...D,qty:D.sign*D.qty});D=null;commit('Stock updated')}
+
+/* ================= ALERTS ================= */
+R.alerts=()=>{const al=alerts();const g=al.filter(a=>a.lvl==='grey');return head('Alerts')+(al.length?'':'<div class="card">All clear. No alerts.</div>')+al.filter(a=>a.lvl!=='grey').map(alertRow).join('')+
+ (g.length?`<h2 style="margin-top:18px">Empty batches (${g.length})</h2><div class="mut">These batches are used up. Close them to tidy the list.</div>${g.map(alertRow).join('')}<button class="btn s o" onclick="closeAllZero()">Close all empty batches</button>`:'')};
+function closeAllZero(){const st=stock();S.batches.forEach(b=>{if(!b.closed&&(st.b[b.id]||0)===0)b.closed=true});commit('Closed')}
+
+/* ================= DEMAND vs SUPPLY ================= */
+R.demand=()=>{const t=today(),st=stock();const q30=itemQtySold(addDays(t,-29),t);const pend={};for(const o of S.orders)for(const l of orderProgress(o))pend[l.itemId]=(pend[l.itemId]||0)+l.pending;
+ const q7=itemQtySold(addDays(t,-6),t),q28=itemQtySold(addDays(t,-27),t);const rows=S.items.filter(i=>i.type==='Finished').map(it=>{const av=available(it.id),dem=pend[it.id]||0,rate=0.6*(q7[it.id]||0)/7+0.4*(q28[it.id]||0)/28,need14=Math.ceil(rate*(+(it.leadDays)||3)+rate*9);const short=Math.max(0,dem-av);const suggest=Math.max(0,Math.ceil(dem+need14+(+it.reorder||0)-av));
+  return{it,av,dem,rate,short,suggest,cover:rate?Math.floor(Math.max(0,av-dem)/rate):null}}).sort((a,b)=>b.short-a.short||b.suggest-a.suggest);
+ const raw=S.items.filter(i=>i.type!=='Finished').map(it=>({it,av:available(it.id),used:-S.moves.filter(m=>m.itemId===it.id&&m.type==='consumed'&&m.date>=addDays(t,-29)).reduce((s,m)=>s+m.qty,0)}));
+ return head('Demand vs supply')+`<div class="card mut">Demand = pending customer orders. Supply = stock that has not expired. Sales speed = 60% last 7 days + 40% last 28 days. “Make / buy” covers pending orders, the production lead time plus 7 days review and 2 days safety, and keeps you above the reorder level.</div>
+ <div class="card scroll"><h2>Finished products</h2><table><tr><th>Product</th><th class="n">Pending orders</th><th class="n">Good stock</th><th class="n">Shortfall</th><th class="n">Avg sales/day</th><th class="n">Stock lasts</th><th class="n">Make / buy now</th></tr>
+ ${rows.map(r=>`<tr><td>${esc(r.it.name)}</td><td class="n">${qf(r.dem)}</td><td class="n">${qf(r.av)}</td><td class="n">${r.short?`<b class="dn">${qf(r.short)}</b>`:'0'}</td><td class="n">${r2(r.rate)}</td><td class="n">${r.cover===null?'-':r.cover+' days'}</td><td class="n">${r.suggest?`<b>${qf(r.suggest)} ${esc(r.it.unit)}</b>`:'<span class="up">enough</span>'}</td></tr>`).join('')||'<tr><td colspan="7" class="mut">No finished products.</td></tr>'}</table></div>
+ <div class="card scroll"><h2>Raw materials & packing</h2><table><tr><th>Item</th><th class="n">Good stock</th><th class="n">Used last 30 days</th><th class="n">Lasts</th><th class="n">Reorder level</th></tr>${raw.map(r=>`<tr><td>${esc(r.it.name)}</td><td class="n">${qf(r.av)} ${esc(r.it.unit)}</td><td class="n">${qf(r.used)}</td><td class="n">${r.used?Math.floor(r.av/(r.used/30))+' days':'-'}</td><td class="n">${r.av<=(+r.it.reorder||0)?`<b class="dn">${qf(r.it.reorder)}</b>`:qf(r.it.reorder)}</td></tr>`).join('')||'<tr><td colspan="5" class="mut">None.</td></tr>'}</table></div>`};
+
+/* ================= REPORTS ================= */
+let REP={from:today().slice(0,8)+'01',to:today()};let RD={};
+function setMonth(v){if(!v)return;const [y,m]=v.split('-').map(Number);REP.from=v+'-01';REP.to=ymd(new Date(y,m,0));render()}
+const inP=d=>d>=REP.from&&d<=REP.to;
+function rtable(key,title,h,rows,note){RD[key]={h,rows,title};return `<div class="card"><div class="row"><h2 style="margin:0">${esc(title)}</h2><span class="mut">${rows.length} row(s)</span><span class="sp"></span><button class="btn s o" onclick="dlRep('${key}')">⬇ Excel (CSV)</button></div>${note?`<div class="mut" style="font-size:13px">${note}</div>`:''}<div class="scroll" style="margin-top:6px"><table><tr>${h.map(x=>`<th>${esc(x)}</th>`).join('')}</tr>${rows.length?rows.map(r=>`<tr>${r.map(c=>typeof c==='number'?`<td class="n">${c.toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:2})}</td>`:`<td>${esc(c)}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${h.length}" class="mut">Nothing in this period.</td></tr>`}</table></div></div>`}
+function dlRep(k){const d=RD[k];csv(d.title+'_'+REP.from+'_to_'+REP.to,d.h,d.rows)}
+function dlAll(keys,name){const parts=keys.filter(k=>RD[k]).map(k=>csvText([RD[k].title],[])+'\r\n'+csvText(RD[k].h,RD[k].rows));download(name+'_'+REP.from+'_to_'+REP.to+'.csv','\ufeff'+parts.join('\r\n\r\n'),'text/csv;charset=utf-8')}
+function byRate(doc){const m={};for(const l of doc.lines){const k=l.gst;m[k]=m[k]||{rate:k,taxable:0,igst:0,cgst:0,sgst:0};m[k].taxable+=l.taxable;m[k].igst+=l.igst;m[k].cgst+=l.cgst;m[k].sgst+=l.sgst}return Object.values(m).map(x=>({...x,taxable:r2(x.taxable),igst:r2(x.igst),cgst:r2(x.cgst),sgst:r2(x.sgst)}))}
+function gstData(){const biz=S.settings.state,lim=+S.settings.b2clLimit||100000;
+ const sales=S.sales.filter(s=>!s.cancelled&&inP(s.date)),cns=S.salesReturns.filter(r=>!r.cancelled&&inP(r.date));
+ const purch=S.purchases.filter(p=>!p.cancelled&&inP(p.date)),dns=S.purchaseReturns.filter(r=>!r.cancelled&&inP(r.date));
+ const isB2CL=s=>!s.party.gstin&&s.inter&&s.total>lim;
+ const b2b=[],b2cl=[],b2cs={},cdnr=[],cdnur=[],hsn={};
+ for(const s of sales){for(const x of byRate(s)){if(s.party.gstin)b2b.push([s.party.gstin,s.party.name,s.no,dmy(s.date),s.total,stName(s.pos),'N','Regular B2B',x.rate,x.taxable,x.igst,x.cgst,x.sgst,0]);
+  else if(isB2CL(s))b2cl.push([s.no,dmy(s.date),s.total,stName(s.pos),x.rate,x.taxable,x.igst,0]);
+  else{const k=s.pos+'|'+x.rate;b2cs[k]=b2cs[k]||{pos:s.pos,rate:x.rate,taxable:0,igst:0,cgst:0,sgst:0};const o=b2cs[k];o.taxable+=x.taxable;o.igst+=x.igst;o.cgst+=x.cgst;o.sgst+=x.sgst}}}
+ for(const r of cns){const inv=byId(S.sales,r.invoiceId);for(const x of byRate(r)){if(r.party.gstin)cdnr.push([r.party.gstin,r.party.name,r.no,dmy(r.date),'Credit note',stName(r.pos),'N','Regular B2B',r.total,x.rate,x.taxable,x.igst,x.cgst,x.sgst,r.invoiceNo]);
+  else if(inv&&isB2CL(inv))cdnur.push(['B2CL',r.no,dmy(r.date),'Credit note',stName(r.pos),r.total,x.rate,x.taxable,x.igst,r.invoiceNo]);
+  else{const k=r.pos+'|'+x.rate;b2cs[k]=b2cs[k]||{pos:r.pos,rate:x.rate,taxable:0,igst:0,cgst:0,sgst:0};const o=b2cs[k];o.taxable-=x.taxable;o.igst-=x.igst;o.cgst-=x.cgst;o.sgst-=x.sgst}}}
+ const addH=(doc,sign)=>{const typ=doc.party.gstin?'B2B':'B2C';for(const l of doc.lines){const k=typ+'|'+l.hsn+'|'+l.unit+'|'+l.gst;hsn[k]=hsn[k]||{typ,hsn:l.hsn,desc:l.name,uqc:l.unit,rate:l.gst,qty:0,val:0,taxable:0,igst:0,cgst:0,sgst:0};const h=hsn[k];h.qty+=sign*l.qty;h.val+=sign*l.total;h.taxable+=sign*l.taxable;h.igst+=sign*l.igst;h.cgst+=sign*l.cgst;h.sgst+=sign*l.sgst}};
+ sales.forEach(s=>addH(s,1));cns.forEach(r=>addH(r,-1));
+ const allInv=S.sales.filter(s=>inP(s.date)).sort((a,b)=>a.no.localeCompare(b.no)),allCn=S.salesReturns.filter(r=>inP(r.date)).sort((a,b)=>a.no.localeCompare(b.no));
+ const docs=[];if(allInv.length)docs.push(['Invoices for outward supply',allInv[0].no,allInv[allInv.length-1].no,allInv.length,allInv.filter(s=>s.cancelled).length,allInv.length-allInv.filter(s=>s.cancelled).length]);
+ if(allCn.length)docs.push(['Credit notes',allCn[0].no,allCn[allCn.length-1].no,allCn.length,allCn.filter(s=>s.cancelled).length,allCn.length-allCn.filter(s=>s.cancelled).length]);
+ // 3B
+ const T=(arr,f)=>r2(arr.reduce((s,d)=>s+d.lines.filter(f).reduce((a,l)=>a+0,0),0));
+ const agg=(arr,f)=>{const o={taxable:0,igst:0,cgst:0,sgst:0};for(const d of arr)for(const l of d.lines)if(f(l)){o.taxable+=l.taxable;o.igst+=l.igst;o.cgst+=l.cgst;o.sgst+=l.sgst}for(const k in o)o[k]=r2(o[k]);return o};
+ const minus=(a,b)=>{const o={};for(const k in a)o[k]=r2(a[k]-b[k]);return o};
+ const out=minus(agg(sales,l=>l.gst>0),agg(cns,l=>l.gst>0)),nil=minus(agg(sales,l=>l.gst==0),agg(cns,l=>l.gst==0));
+ const itc=minus(agg(purch.filter(p=>p.party.gstin),()=>true),agg(dns.filter(p=>p.party.gstin),()=>true));const ex=expenseITC(REP.from,REP.to);itc.igst=r2(itc.igst+ex.igst);itc.cgst=r2(itc.cgst+ex.cgst);itc.sgst=r2(itc.sgst+ex.sgst);
+ const inter32={};for(const s of sales)if(!s.party.gstin&&s.inter){const k=s.pos;inter32[k]=inter32[k]||{taxable:0,igst:0};for(const l of s.lines){inter32[k].taxable+=l.taxable;inter32[k].igst+=l.igst}}
+ for(const r of cns)if(!r.party.gstin&&r.inter&&inter32[r.pos]){for(const l of r.lines){inter32[r.pos].taxable-=l.taxable;inter32[r.pos].igst-=l.igst}}
+ return{sales,cns,purch,dns,b2b,b2cl,b2cs:Object.values(b2cs).map(o=>['OE',stName(o.pos),o.rate,r2(o.taxable),r2(o.igst),r2(o.cgst),r2(o.sgst),0]),cdnr,cdnur,
+  hsn:Object.values(hsn).sort((a,b)=>a.typ.localeCompare(b.typ)||a.hsn.localeCompare(b.hsn)).map(h=>[h.typ,h.hsn,h.desc,h.uqc,r3(h.qty),r2(h.val),h.rate,r2(h.taxable),r2(h.igst),r2(h.cgst),r2(h.sgst),0]),docs,out,nil,itc,inter32}}
+function utilise(o,c){o={...o};c={...c};const use=(ck,ok)=>{const u=Math.min(c[ck],o[ok]);c[ck]=r2(c[ck]-u);o[ok]=r2(o[ok]-u)};
+ use('igst','igst');use('igst','cgst');use('igst','sgst');use('cgst','cgst');use('cgst','igst');use('sgst','sgst');use('sgst','igst');return{pay:o,carry:c}}
+R.reports=()=>{RD={};const tab=TAB.rep||'g1';const g=gstData();const top=head('GST & reports')+`<div class="card row"><div><label>Month</label><input type="month" value="${REP.from.slice(0,7)}" onchange="setMonth(this.value)" style="width:170px"></div><div><label>or from</label><input type="date" value="${REP.from}" onchange="REP.from=this.value;render()"></div><div><label>to</label><input type="date" value="${REP.to}" onchange="REP.to=this.value;render()"></div><span class="sp"></span><div class="mut" style="max-width:360px;font-size:13px">These are working summaries for your accountant and the GST portal. Check figures against the portal before filing.</div></div>`+
+ tabs('rep',[['g1','GSTR-1 (sales)'],['g3','GSTR-3B (tax summary)'],['sr','Sales register'],['pr','Purchase register'],['rr','Returns register'],['st','Stock & expiry']]);
+ if(tab==='g1')return top+`<div class="row" style="margin-bottom:10px"><button class="btn" onclick="dlAll(['b2b','b2cl','b2cs','cdnr','cdnur','hsn','doc'],'GSTR1_all_tables')">⬇ Download all GSTR-1 tables in one file</button></div>`+
+  rtable('b2b','4A B2B invoices (registered buyers)',['GSTIN of recipient','Receiver name','Invoice no','Invoice date','Invoice value','Place of supply','Reverse charge','Invoice type','Rate %','Taxable value','IGST','CGST','SGST','Cess'],g.b2b)+
+  rtable('b2cl','5 B2C large (inter-state, invoice above ₹'+(+S.settings.b2clLimit).toLocaleString('en-IN')+')',['Invoice no','Invoice date','Invoice value','Place of supply','Rate %','Taxable value','IGST','Cess'],g.b2cl)+
+  rtable('b2cs','7 B2C small (net of credit notes)',['Type','Place of supply','Rate %','Taxable value','IGST','CGST','SGST','Cess'],g.b2cs)+
+  rtable('cdnr','9B Credit/debit notes (registered)',['GSTIN','Receiver name','Note no','Note date','Note type','Place of supply','Reverse charge','Note supply type','Note value','Rate %','Taxable value','IGST','CGST','SGST','Against invoice'],g.cdnr)+
+  rtable('cdnur','9B Credit/debit notes (unregistered, B2CL)',['UR type','Note no','Note date','Note type','Place of supply','Note value','Rate %','Taxable value','IGST','Against invoice'],g.cdnur)+
+  rtable('hsn','12 HSN-wise summary (B2B and B2C tabs)',['Tab','HSN','Description','UQC','Total qty','Total value','Rate %','Taxable value','IGST','CGST','SGST','Cess'],g.hsn)+
+  rtable('doc','13 Documents issued',['Nature of document','Sr. no. from','Sr. no. to','Total','Cancelled','Net issued'],g.docs);
+ if(tab==='g3'){const u=utilise(g.out,g.itc);const t32=Object.entries(g.inter32).map(([k,v])=>[stName(k),r2(v.taxable),r2(v.igst)]);
+  const tbl=[['3.1(a) Outward taxable supplies (net of credit notes)',g.out.taxable,g.out.igst,g.out.cgst,g.out.sgst,0],['3.1(c) Nil rated / exempt',g.nil.taxable,0,0,0,0],['4(A)(5) ITC: all other (purchases net of debit notes, plus GST on expenses)','',g.itc.igst,g.itc.cgst,g.itc.sgst,0],['Tax payable in cash (after set-off)','',u.pay.igst,u.pay.cgst,u.pay.sgst,0],['ITC carried forward','',u.carry.igst,u.carry.cgst,u.carry.sgst,0]];
+  return top+rtable('g3b','GSTR-3B summary',['Section','Taxable value','IGST','CGST','SGST','Cess'],tbl,`Cash payable: <b>${money(u.pay.igst+u.pay.cgst+u.pay.sgst)}</b>. ITC is counted only for bills from suppliers with a GSTIN; confirm each bill appears in your GSTR-2B before claiming. Set-off follows IGST credit first, then CGST/SGST.`)+
+  rtable('g32','3.2 Inter-state supplies to unregistered persons',['Place of supply','Taxable value','IGST'],t32)}
+ if(tab==='sr')return top+rtable('sreg','Sales register',['Invoice no','Date','Customer','GSTIN','Place of supply','Taxable','CGST','SGST','IGST','Round off','Total','Payment','Status'],S.sales.filter(s=>inP(s.date)).map(s=>[s.no,dmy(s.date),s.party.name,s.party.gstin,stName(s.pos),s.cancelled?0:s.taxable,s.cancelled?0:s.cgst,s.cancelled?0:s.sgst,s.cancelled?0:s.igst,s.cancelled?0:s.roundOff,s.cancelled?0:s.total,s.payMode,s.cancelled?'Cancelled':'Active']))+
+  rtable('sitem','Item-wise sales',['Invoice no','Date','Customer','Product','HSN','Batch','Qty','Unit','Rate','Disc %','Taxable','GST %','Tax','Line total'],g.sales.flatMap(s=>s.lines.map(l=>[s.no,dmy(s.date),s.party.name,l.name,l.hsn,l.batchText,l.qty,l.unit,l.rate,l.disc,l.taxable,l.gst,r2(l.cgst+l.sgst+l.igst),l.total])));
+ if(tab==='pr')return top+rtable('preg','Purchase register',['Entry no','Date','Supplier','GSTIN','Supplier bill','Bill date','Taxable','CGST','SGST','IGST','Total','Status'],S.purchases.filter(p=>inP(p.date)).map(p=>[p.no,dmy(p.date),p.party.name,p.party.gstin,p.supInvNo,dmy(p.supInvDate),p.taxable,p.cgst,p.sgst,p.igst,p.total,p.cancelled?'Cancelled':'Active']))+
+  rtable('pitem','Item-wise purchases',['Entry no','Date','Supplier','Item','HSN','Batch','Expiry','Qty','Unit','Rate','Taxable','GST %','Tax','Total'],g.purch.flatMap(p=>p.lines.map(l=>[p.no,dmy(p.date),p.party.name,l.name,l.hsn,l.batchNo,dmy(l.exp),l.qty,l.unit,l.rate,l.taxable,l.gst,r2(l.cgst+l.sgst+l.igst),l.total])))+
+  rtable('psup','Supplier-wise totals',['Supplier','GSTIN','Bills','Taxable','GST','Total'],Object.values(g.purch.reduce((m,p)=>{const k=p.party.name;m[k]=m[k]||[k,p.party.gstin,0,0,0,0];m[k][2]++;m[k][3]=r2(m[k][3]+p.taxable);m[k][4]=r2(m[k][4]+p.cgst+p.sgst+p.igst);m[k][5]=r2(m[k][5]+p.total);return m},{})));
+ if(tab==='rr')return top+rtable('cnreg','Credit notes (sales returns)',['Note no','Date','Invoice','Customer','GSTIN','Reason','Restocked','Taxable','CGST','SGST','IGST','Total','Status'],S.salesReturns.filter(r=>inP(r.date)).map(r=>[r.no,dmy(r.date),r.invoiceNo,r.party.name,r.party.gstin,r.reason,r.restock?'Yes':'No',r.taxable,r.cgst,r.sgst,r.igst,r.total,r.cancelled?'Cancelled':'Active']))+
+  rtable('dnreg','Debit notes (purchase returns)',['Note no','Date','Purchase','Supplier bill','Supplier','GSTIN','Reason','Taxable','CGST','SGST','IGST','Total','Status'],S.purchaseReturns.filter(r=>inP(r.date)).map(r=>[r.no,dmy(r.date),r.purchaseNo,r.supInvNo,r.party.name,r.party.gstin,r.reason,r.taxable,r.cgst,r.sgst,r.igst,r.total,r.cancelled?'Cancelled':'Active']));
+ if(tab==='st'){const st=stock(),t=today();return top+rtable('stock','Stock summary (today)',['Item','Type','HSN','Unit','Stock','Value at cost','Reorder level'],S.items.map(it=>[it.name,it.type,it.hsn,it.unit,st.it[it.id]||0,r2(S.batches.filter(b=>b.itemId===it.id).reduce((s,b)=>s+Math.max(0,st.b[b.id]||0)*(b.cost||itemCost(it.id)),0)),+it.reorder||0]))+
+  rtable('batch','Batch & expiry (today)',['Item','Batch','Mfg','Expiry','Days to expiry','Qty','Status'],S.batches.filter(b=>(st.b[b.id]||0)!==0).sort((a,b)=>(a.exp||'9999').localeCompare(b.exp||'9999')).map(b=>{const it=byId(S.items,b.itemId)||{};const q=st.b[b.id]||0;const dte=b.exp?Math.round((new Date(b.exp)-new Date(t))/864e5):'';return[it.name,b.no,dmy(b.mfg),dmy(b.exp),dte,q,q<0?'Negative':b.exp&&b.exp<t?'Expired':'OK']}))+
+  rtable('moves','Stock movements in period',['Date','Item','Batch','Type','Qty in(+)/out(-)','Document'],S.moves.filter(m=>inP(m.date)).sort((a,b)=>a.date.localeCompare(b.date)).map(m=>[dmy(m.date),(byId(S.items,m.itemId)||{}).name,(byId(S.batches,m.batchId)||{no:'(none)'}).no,m.type,m.qty,docNo(m.refId)]))}
+ return top};
+function docNo(id){for(const c of['sales','purchases','salesReturns','purchaseReturns','production','adjustments']){const d=byId(S[c],id);if(d)return d.no}return ''}
+
+/* ================= MASTERS ================= */
+const MF={items:{title:'Products & materials',single:'product',fields:[['name','Name *','text'],['type','Type','select',TYPES],['sku','Short code','text'],['hsn','HSN code','text'],['unit','Unit (UQC)','select',UNITS],['gst','GST rate %','select',RATES],['price','Selling price (before GST)','number'],['cost','Purchase / making cost','number'],['reorder','Reorder level','number'],['shelfDays','Shelf life (days)','number'],['leadDays','Lead time to make / buy (days)','number']],cols:[['name','Name'],['type','Type'],['hsn','HSN'],['unit','Unit'],['gst','GST %'],['price','Price'],['reorder','Reorder'],['shelfDays','Shelf life']],
+  def:()=>({type:'Finished',unit:'PCS',gst:5,hsn:'1704',shelfDays:270})},
+ customers:{title:'Customers',single:'customer',fields:[['name','Name *','text'],['gstin','GSTIN (leave blank if unregistered)','text'],['state','State','state'],['phone','Phone','text'],['email','Email','text'],['disc','Default discount %','number'],['creditDays','Credit days allowed','number'],['address','Billing address','textarea']],cols:[['name','Name'],['gstin','GSTIN'],['state','State'],['phone','Phone'],['disc','Disc %'],['creditDays','Credit days']],def:()=>({state:''})},
+ suppliers:{title:'Suppliers (goods & raw materials)',single:'supplier',fields:[['name','Name *','text'],['gstin','GSTIN','text'],['state','State','state'],['phone','Phone','text'],['email','Email','text'],['leadDays','Delivery lead time (days)','number'],['address','Address','textarea']],cols:[['name','Name'],['gstin','GSTIN'],['state','State'],['phone','Phone'],['leadDays','Lead days']],def:()=>({state:'',leadDays:3})},
+ vendors:{title:'Vendors (services: transport, electricity, labour, ads, auditor…)',single:'vendor',fields:[['name','Name *','text'],['service','Main service / expense category','select',[...EXCATS.OpEx,...EXCATS.CapEx].map(c=>c[0])],['gstin','GSTIN','text'],['state','State','state'],['phone','Phone','text'],['email','Email','text'],['address','Address','textarea']],cols:[['name','Name'],['service','Service'],['gstin','GSTIN'],['phone','Phone']],def:()=>({state:'',service:'Transportation / freight'})}};
+function masterPage(coll){const m=MF[coll];if(D&&D.kind==='master')return masterForm();
+ return head(m.title,`<button class="btn" onclick="editM('${coll}')">+ Add ${m.single}</button>`)+`<div class="card"><input placeholder="Search…" oninput="filt(this,'tM')" style="max-width:420px;margin-bottom:8px"><div class="scroll"><table id="tM"><tr>${m.cols.map(c=>`<th>${c[1]}</th>`).join('')}<th></th></tr>${S[coll].map(x=>`<tr>${m.cols.map(c=>`<td>${esc(c[0]==='state'?stName(x.state):x[c[0]])}</td>`).join('')}<td style="white-space:nowrap"><button class="btn s o" onclick="editM('${coll}','${x.id}')">Edit</button><button class="btn s o" onclick="delM('${coll}','${x.id}')">Delete</button></td></tr>`).join('')||`<tr><td colspan="9" class="mut">None yet.</td></tr>`}</table></div></div>`}
+R.items=()=>masterPage('items');R.customers=()=>masterPage('customers');R.suppliers=()=>masterPage('suppliers');
+function editM(coll,id){const x=id?{...byId(S[coll],id)}:{id:'',...MF[coll].def()};D={kind:'master',coll,x};render()}
+function masterForm(){const m=MF[D.coll],x=D.x;const fld=([k,l,t,o])=>`<div${t==='textarea'?' style="grid-column:1/-1"':''}><label>${l}</label>${t==='select'?`<select onchange="D.x.${k}=this.value">${o.map(v=>opt(v,v,x[k])).join('')}</select>`:t==='state'?`<select onchange="D.x.state=this.value">${stateOpts(x.state)}</select>`:t==='textarea'?`<textarea rows="2" oninput="D.x.${k}=this.value">${esc(x[k])}</textarea>`:`<input type="${t}" ${t==='number'?'step="any"':''} value="${esc(x[k])}" oninput="D.x.${k}=this.value${k==='gstin'?';gstinHint(this)':''}">`}${k==='gstin'?'<div id="gh" class="mut" style="font-size:12px"></div>':''}</div>`;
+ return head((x.id?'Edit ':'New ')+m.single)+`<div class="card"><div class="f">${m.fields.map(fld).join('')}</div>${D.coll==='items'?'<div class="mut" style="font-size:13px">Ginger candy is usually HSN 1704 (sugar confectionery). Confirm the GST rate with your accountant.</div>':''}</div><div class="row"><button class="btn" onclick="saveM()">Save</button><button class="btn o" onclick="go('${D.coll}')">Discard</button></div>`}
+function gstinHint(inp){const g=inp.value.trim().toUpperCase();const el=document.getElementById('gh');if(!g){el.textContent='';return}if(gstinValid(g)){el.innerHTML='<span class="up">Valid GSTIN · state '+esc(stName(g.slice(0,2)))+'</span>';D.x.state=g.slice(0,2);const s=inp.closest('.f').querySelector('select');if(s)s.value=D.x.state}else el.innerHTML='<span class="dn">GSTIN does not look valid yet</span>'}
+function saveM(){const x=D.x,coll=D.coll;if(!(x.name||'').trim())return toast('Name is required');if(x.gstin){x.gstin=x.gstin.trim().toUpperCase();if(!gstinValid(x.gstin)&&!confirm('This GSTIN fails the format check. Save anyway?'))return;if(!x.state)x.state=x.gstin.slice(0,2)}
+ for(const k of['price','cost','reorder','shelfDays','gst','disc','creditDays','leadDays'])if(k in x&&x[k]!=='')x[k]=+x[k];
+ if(x.id){Object.assign(byId(S[coll],x.id),x)}else{x.id=uid();S[coll].push(x)}D=null;commit('Saved')}
+function delM(coll,id){const used=coll==='items'?S.moves.some(m=>m.itemId===id)||S.orders.some(o=>o.lines.some(l=>l.itemId===id)):coll==='customers'?S.sales.some(s=>s.customerId===id)||S.orders.some(o=>o.customerId===id):coll==='vendors'?false:S.purchases.some(p=>p.supplierId===id);
+ if(used)return alert('This is used in saved entries, so it cannot be deleted. You can rename it instead.');if(!confirm('Delete?'))return;S[coll]=S[coll].filter(x=>x.id!==id);commit('Deleted')}
+
+/* ================= SETTINGS & BACKUP ================= */
+R.settings=()=>{const s=S.settings;const f=(k,l,t)=>`<div><label>${l}</label>${t==='state'?`<select onchange="S.settings.state=this.value;persist()">${stateOpts(s.state)}</select>`:`<input ${t?'type="'+t+'"':''} value="${esc(s[k])}" onchange="S.settings['${k}']=${t==='number'?'+this.value':'this.value'};persist();nav()">`}</div>`;
+ const fs='showSaveFilePicker' in window;const lb=S.lastBackup?new Date(S.lastBackup).toLocaleString('en-IN'):'never';const la=localStorage.getItem(DBNAME+'-auto');
+ return head('Settings & backup')+`<div class="card"><h2>Your business (printed on invoices)</h2><div class="f">${f('name','Business name *')}${f('gstin','GSTIN')}${f('state','State *','state')}${f('phone','Phone')}${f('email','Email')}${f('fssai','FSSAI licence no.')}</div>
+ <div class="f">${f('address','Address')}${f('bank','Bank details (name, A/c, IFSC, UPI)')}</div><div class="f">${f('terms','Terms printed on invoice')}</div>
+ <div class="f">${f('expiryWarnDays','Warn before expiry (days)','number')}${f('b2clLimit','B2C large invoice limit (₹)','number')}${f('backupDays','Remind to back up every (days)','number')}${f('monthTarget','Monthly sales target (₹, with GST)','number')}</div>
+ <div class="mut" style="font-size:13px">Changes save automatically.</div></div>
+ <div class="card"><h2>Backup (important)</h2><p>Your data is stored only inside this browser on this computer. Clearing browser data or changing computers will lose it unless you keep a backup file.</p>
+ <div class="row"><button class="btn" onclick="backupNow()">⬇ Download backup now</button><label class="btn o" style="margin:2px">⬆ Restore from backup<input type="file" accept=".json" style="display:none" onchange="restore(this.files[0])"></label><span class="mut">Last download: ${lb}</span></div>
+ ${fs?`<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px"><b>Automatic backup file</b> <span class="mut">(Chrome / Edge)</span><br>
+ ${FH?`<span class="up">ON</span> · last written ${la?new Date(la).toLocaleString('en-IN'):'-'} ${AUTO_NEEDS?'<button class="btn s" onclick="reconnectFH()">Reconnect</button>':''} <button class="btn s o" onclick="stopAuto()">Turn off</button>`:`<span class="mut">Pick a file inside C:\\GingerCan\\Backups (or a Google Drive folder). Every change is then copied there automatically.</span><br><button class="btn o" onclick="pickBackupFile()">Choose auto-backup file</button>`}</div>`:''}</div>
+ <div class="card"><h2>Try it out / start fresh</h2><div class="row"><button class="btn o" onclick="loadSample()">Load sample data</button><button class="btn r" onclick="eraseAll()">Erase all data</button></div><div class="mut" style="font-size:13px">Sample data replaces everything. Erase sample data before entering real business data.</div></div>`};
+function backupNow(){S.lastBackup=new Date().toISOString();persist();download('GingerBooks-backup-'+today()+'.json',JSON.stringify(S),'application/json');render()}
+function restore(file){if(!file)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.settings||!d.sales)throw 0;if(!confirm('Replace ALL current data with this backup?'))return;S=Object.assign(blank(),d);commit('Backup restored')}catch(e){alert('That file is not a GingerBooks backup.')}};r.readAsText(file)}
+function eraseAll(){if(prompt('Type ERASE to delete all data in this browser')!=='ERASE')return;S=blank();commit('All data erased')}
+
+/* ================= PRINT ================= */
+function printDoc(kind,id){const d=kind==='sale'?byId(S.sales,id):kind==='cn'?byId(S.salesReturns,id):byId(S.purchaseReturns,id);if(!d)return;
+ document.getElementById('print').innerHTML=docHTML(d,kind);const old=document.title;document.title=d.no.replace(/\//g,'-')+' '+d.party.name;setTimeout(()=>{window.print();document.title=old},50)}
+function docHTML(d,kind){const s=S.settings;const title={sale:'TAX INVOICE',cn:'CREDIT NOTE',dn:'DEBIT NOTE'}[kind];const inter=d.inter;
+ const hs={};for(const l of d.lines){const k=l.hsn+'|'+l.gst;hs[k]=hs[k]||{hsn:l.hsn,rate:l.gst,taxable:0,cgst:0,sgst:0,igst:0};const h=hs[k];h.taxable+=l.taxable;h.cgst+=l.cgst;h.sgst+=l.sgst;h.igst+=l.igst}
+ const ref=kind==='sale'?'':kind==='cn'?`<tr><td><b>Against invoice:</b> ${esc(d.invoiceNo)} dated ${dmy(d.invoiceDate)}<br><b>Reason:</b> ${esc(d.reason)}</td></tr>`:`<tr><td><b>Against supplier bill:</b> ${esc(d.supInvNo)} dated ${dmy(d.supInvDate)}<br><b>Reason:</b> ${esc(d.reason)}</td></tr>`;
+ const qtyTot=d.lines.reduce((a,l)=>a+l.qty,0);
+ return `<div class="inv"><table><tr><td colspan="2" class="t">${title}</td></tr>
+ <tr><td style="width:55%"><b style="font-size:14px">${esc(s.name)}</b><br>${esc(s.address).replace(/\n/g,'<br>')}<br>${s.phone?'Ph: '+esc(s.phone)+' ':''}${s.email?'· '+esc(s.email):''}<br><b>GSTIN: ${esc(s.gstin||'—')}</b> · State: ${esc(stName(s.state))}${s.fssai?'<br>FSSAI: '+esc(s.fssai):''}</td>
+ <td>${kind==='sale'?'Invoice':'Note'} No: <b>${esc(d.no)}</b><br>Date: <b>${dmy(d.date)}</b><br>Place of supply: ${esc(stName(d.pos))}<br>Reverse charge: No${kind==='sale'?'<br>Payment: '+esc(d.payMode):''}<br><i>${kind==='dn'?'Original for supplier':'Original for recipient'}</i></td></tr>
+ <tr><td colspan="2"><b>${kind==='dn'?'Supplier (recipient of this note)':'Bill to'}:</b> ${esc(d.party.name)}${d.party.address?'<br>'+esc(d.party.address).replace(/\n/g,'<br>'):''}${d.party.phone?' · Ph: '+esc(d.party.phone):''}<br>GSTIN: <b>${esc(d.party.gstin||'Unregistered')}</b> · State: ${esc(stName(d.party.state||d.pos))}</td></tr>${ref}</table>
+ <table style="margin-top:-1px"><tr><th>#</th><th>Description</th><th>HSN</th><th>Qty</th><th>Unit</th><th>Rate</th><th>Disc%</th><th>Taxable</th><th>GST%</th>${inter?'<th>IGST</th>':'<th>CGST</th><th>SGST</th>'}<th>Amount</th></tr>
+ ${d.lines.map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.name)}${l.batchText?`<br><small>Batch: ${esc(l.batchText)}</small>`:''}</td><td>${esc(l.hsn)}</td><td class="n">${qf(l.qty)}</td><td>${esc(l.unit)}</td><td class="n">${f2(l.rate)}</td><td class="n">${l.disc||0}</td><td class="n">${f2(l.taxable)}</td><td class="n">${l.gst}</td>${inter?`<td class="n">${f2(l.igst)}</td>`:`<td class="n">${f2(l.cgst)}</td><td class="n">${f2(l.sgst)}</td>`}<td class="n">${f2(l.total)}</td></tr>`).join('')}
+ <tr><td></td><td><b>Total</b></td><td></td><td class="n"><b>${qf(qtyTot)}</b></td><td colspan="3"></td><td class="n"><b>${f2(d.taxable)}</b></td><td></td>${inter?`<td class="n"><b>${f2(d.igst)}</b></td>`:`<td class="n"><b>${f2(d.cgst)}</b></td><td class="n"><b>${f2(d.sgst)}</b></td>`}<td class="n"><b>${f2(d.gross)}</b></td></tr></table>
+ <table style="margin-top:-1px"><tr><td style="width:60%"><b>Amount in words:</b><br>${amountWords(d.total)}</td><td><table class="nb"><tr><td>Taxable value</td><td class="n">${f2(d.taxable)}</td></tr>${inter?`<tr><td>IGST</td><td class="n">${f2(d.igst)}</td></tr>`:`<tr><td>CGST</td><td class="n">${f2(d.cgst)}</td></tr><tr><td>SGST</td><td class="n">${f2(d.sgst)}</td></tr>`}<tr><td>Round off</td><td class="n">${f2(d.roundOff)}</td></tr><tr><td><b>Grand total</b></td><td class="n"><b>₹ ${f2(d.total)}</b></td></tr></table></td></tr></table>
+ <table style="margin-top:-1px"><tr><th>HSN</th><th>Taxable</th><th>Rate</th>${inter?'<th>IGST</th>':'<th>CGST</th><th>SGST</th>'}<th>Total tax</th></tr>${Object.values(hs).map(h=>`<tr><td>${esc(h.hsn)}</td><td class="n">${f2(h.taxable)}</td><td class="n">${h.rate}%</td>${inter?`<td class="n">${f2(h.igst)}</td>`:`<td class="n">${f2(h.cgst)}</td><td class="n">${f2(h.sgst)}</td>`}<td class="n">${f2(h.cgst+h.sgst+h.igst)}</td></tr>`).join('')}</table>
+ <table style="margin-top:-1px"><tr><td style="width:60%;height:70px">${d.notes?'<b>Notes:</b> '+esc(d.notes)+'<br>':''}${s.bank?'<b>Bank:</b> '+esc(s.bank)+'<br>':''}<small>${esc(s.terms)}</small></td><td style="text-align:right;vertical-align:bottom">For <b>${esc(s.name)}</b><br><br><br>Authorised signatory</td></tr></table>
+ <div style="text-align:center;font-size:9px;margin-top:4px">This is a computer-generated document.</div></div>`}
+
+/* ================= MONEY: margins, payments, bank, expenses, profit ================= */
+const PAYMODES=['Cash','UPI','Cheque','Demand draft','NEFT/RTGS/IMPS','Card','Credit (to be paid)'];
+const RMODES=PAYMODES.filter(m=>!/^Credit/.test(m));
+function unitCostNow(itemId){const st=stock(),t=today();let q=0,v=0;for(const b of S.batches)if(b.itemId===itemId&&(!b.exp||b.exp>=t)){const bq=st.b[b.id]||0;if(bq>0&&b.cost){q+=bq;v+=bq*b.cost}}return q?r2(v/q):itemCost(itemId)}
+function lineMargin(l){if(!l.itemId||!(+l.rate))return null;const c=unitCostNow(l.itemId);if(!c)return null;const net=l.rate*(1-(+l.disc||0)/100);return r2((net-c)/c*100)}
+function marginBox(ls){let rev=0,cost=0;for(const l of ls){if(!l.itemId)continue;rev+=l.taxable||0;cost+=(+l.qty||0)*unitCostNow(l.itemId)}if(!rev)return '';const p=rev-cost;
+ return `<div class="tot mut" style="font-size:13px;margin-top:6px"><div><span>Your cost (not printed)</span><span>${money(cost)}</span></div><div><span>Profit on this invoice</span><b class="${p>=0?'up':'dn'}">${money(p)} (${r2(p/rev*100)}% of sale)</b></div></div>`}
+/* receipts */
+function postReceipt(d){const id=uid();const cheque=/Cheque|Demand/.test(d.mode);
+ const r={id,no:nextNo('RCP',d.date),date:d.date,customerId:d.customerId||'',partyName:d.partyName||((byId(S.customers,d.customerId)||{}).name)||'Cash customer',mode:d.mode,ref:d.ref||'',bank:d.bank||'',amount:r2(d.amount),allocs:[],status:cheque&&!d.bankTxnId?'Awaiting clearance':'Received',bankTxnId:d.bankTxnId||'',auto:!!d.auto,notes:d.notes||'',cancelled:false};
+ if(d.allocs)r.allocs=d.allocs.filter(a=>a.amt>0).map(a=>({saleId:a.saleId,amt:r2(a.amt)}));else{let rem=r.amount;for(const s of openInvoices(r.customerId)){if(rem<=0)break;const amt=Math.min(rem,outstanding(s));if(amt>0){r.allocs.push({saleId:s.id,amt:r2(amt)});rem=r2(rem-amt)}}}
+ S.receipts.push(r);if(d.bankTxnId){const t=byId(S.bankTxns,d.bankTxnId);if(t){t.status='matched';t.link={type:'receipt',id}}}return r}
+const liveRcp=()=>S.receipts.filter(r=>!r.cancelled&&r.status!=='Bounced');
+function paidOn(saleId){return r2(liveRcp().reduce((a,r)=>a+r.allocs.filter(x=>x.saleId===saleId).reduce((b,x)=>b+x.amt,0),0))}
+function outstanding(s){if(s.cancelled)return 0;const cn=S.salesReturns.filter(r=>!r.cancelled&&r.invoiceId===s.id).reduce((a,r)=>a+r.total,0);return Math.max(0,r2(s.total-cn-paidOn(s.id)))}
+function openInvoices(custId){return S.sales.filter(s=>!s.cancelled&&(custId===undefined||s.customerId===custId)&&outstanding(s)>0.009).sort((a,b)=>a.date.localeCompare(b.date)||a.no.localeCompare(b.no))}
+function totalDues(){return r2(openInvoices().reduce((a,s)=>a+outstanding(s),0))}
+function pendingCheques(){return S.receipts.filter(r=>!r.cancelled&&r.status==='Awaiting clearance')}
+function unallocated(r){return r2(r.amount-r.allocs.reduce((a,x)=>a+x.amt,0))}
+function moneyAlerts(out){const t=today();for(const r of pendingCheques()){const d=Math.floor((new Date(t)-new Date(r.date))/864e5);if(d>=4)out.push({lvl:'amber',type:'Cheque not cleared',text:`${r.mode} ${r.ref} from ${r.partyName} for ${money0(r.amount)} received ${d} days ago is not yet seen in the bank.`,btn:['Payments',"TAB.pay='rcp';go('payments')"]})}
+ for(const s of openInvoices()){const c=byId(S.customers,s.customerId);const days=(c&&+c.creditDays)||30;const age=Math.floor((new Date(t)-new Date(s.date))/864e5);if(age>days)out.push({lvl:'amber',type:'Payment overdue',text:`${s.no} · ${s.party.name}: ${money0(outstanding(s))} unpaid for ${age} days.`,btn:['Record payment',`newReceipt('${s.customerId}')`]})}
+ const unm=S.bankTxns.filter(x=>x.status==='unmatched').length;if(unm)out.push({lvl:'grey',type:'Bank entries',text:`${unm} bank statement line(s) not yet matched.`,btn:['Review',"go('bank')"]})}
+R.payments=()=>{if(D&&D.kind==='rcp')return rcpForm();const tab=TAB.pay||'due';const t=today();
+ const top=head('Payments & dues','<button class="btn" onclick="newReceipt()">+ Record payment received</button>')+tabs('pay',[['due','Money to collect'],['rcp','Payments received'],['cust','Customer balances']]);
+ if(tab==='due'){const inv=openInvoices();const ag=[0,0,0,0];inv.forEach(s=>{const a=Math.floor((new Date(t)-new Date(s.date))/864e5);ag[a<=30?0:a<=60?1:a<=90?2:3]+=outstanding(s)});
+  return top+`<div class="grid">${['0-30 days','31-60 days','61-90 days','Over 90 days'].map((l,i)=>`<div class="card kpi"><div class="l">${l}</div><div class="v ${i>1&&ag[i]?'dn':''}">${money0(ag[i])}</div></div>`).join('')}</div>
+  <div class="card scroll"><table><tr><th>Invoice</th><th>Date</th><th>Customer</th><th class="n">Invoice total</th><th class="n">Received</th><th class="n">Balance due</th><th class="n">Age</th><th></th></tr>${inv.map(s=>{const a=Math.floor((new Date(t)-new Date(s.date))/864e5);return `<tr><td>${esc(s.no)}</td><td>${dmy(s.date)}</td><td>${esc(s.party.name)}</td><td class="n">${f2(s.total)}</td><td class="n">${f2(paidOn(s.id))}</td><td class="n"><b>${f2(outstanding(s))}</b></td><td class="n">${a} days</td><td><button class="btn s" onclick="newReceipt('${s.customerId}','${s.id}')">Record payment</button></td></tr>`}).join('')||'<tr><td colspan="8" class="mut">Nothing to collect. All invoices are paid.</td></tr>'}</table></div>`}
+ if(tab==='rcp')return top+`<div class="card scroll"><input placeholder="Search…" oninput="filt(this,'tR')" style="max-width:420px;margin-bottom:8px"><table id="tR"><tr><th>Receipt</th><th>Date</th><th>From</th><th>Mode</th><th>Reference</th><th class="n">Amount</th><th>Against</th><th>Status</th><th></th></tr>${[...S.receipts].reverse().map(r=>`<tr><td>${esc(r.no)}</td><td>${dmy(r.date)}</td><td>${esc(r.partyName)}</td><td>${esc(r.mode)}</td><td>${esc(r.ref)}${r.bank?' · '+esc(r.bank):''}</td><td class="n"><b>${f2(r.amount)}</b></td><td>${r.allocs.map(a=>esc((byId(S.sales,a.saleId)||{}).no)+' ('+f2(a.amt)+')').join('<br>')}${unallocated(r)>0.009?`<div class="mut">Advance: ${f2(unallocated(r))}</div>`:''}</td>
+  <td>${r.cancelled?pill('Cancelled','grey'):r.status==='Bounced'?pill('Bounced','red'):r.status==='Awaiting clearance'?pill('Awaiting clearance','amber'):pill(r.bankTxnId?'In bank ✓':'Received','green')}</td>
+  <td style="white-space:nowrap">${!r.cancelled&&r.status==='Awaiting clearance'?`<button class="btn s" onclick="setRcp('${r.id}','Received')">Cleared</button><button class="btn s o" onclick="setRcp('${r.id}','Bounced')">Bounced</button>`:''}${r.cancelled?'':`<button class="btn s o" onclick="cancelRcp('${r.id}')">Cancel</button>`}</td></tr>`).join('')||'<tr><td colspan="9" class="mut">No payments recorded.</td></tr>'}</table></div>`;
+ const bal={};for(const s of S.sales.filter(s=>!s.cancelled)){const k=s.customerId||'_walk';bal[k]=bal[k]||{name:s.customerId?s.party.name:'Walk-in customers',billed:0,ret:0,paid:0};bal[k].billed+=s.total}
+ for(const r of S.salesReturns.filter(r=>!r.cancelled)){const s=byId(S.sales,r.invoiceId);const k=(s&&s.customerId)||'_walk';if(bal[k])bal[k].ret+=r.total}
+ for(const r of liveRcp()){const k=r.customerId||'_walk';bal[k]=bal[k]||{name:r.partyName,billed:0,ret:0,paid:0};bal[k].paid+=r.amount}
+ return top+`<div class="card scroll"><table><tr><th>Customer</th><th class="n">Billed</th><th class="n">Returns</th><th class="n">Received</th><th class="n">Balance</th></tr>${Object.values(bal).sort((a,b)=>(b.billed-b.ret-b.paid)-(a.billed-a.ret-a.paid)).map(b=>{const x=r2(b.billed-b.ret-b.paid);return `<tr><td>${esc(b.name)}</td><td class="n">${f2(b.billed)}</td><td class="n">${f2(b.ret)}</td><td class="n">${f2(b.paid)}</td><td class="n"><b class="${x>0?'dn':''}">${f2(x)}</b>${x<0?' <span class="mut">advance</span>':''}</td></tr>`}).join('')}</table></div>`};
+function newReceipt(custId,saleId,pre){PAGE='payments';custId=custId||'';D={kind:'rcp',date:today(),customerId:custId,partyName:'',mode:'UPI',ref:'',bank:'',amount:0,auto:true,alloc:{},bankTxnId:'',...(pre||{})};
+ if(saleId){D.auto=false;const s=byId(S.sales,saleId);D.alloc[saleId]=outstanding(s);if(!D.amount)D.amount=outstanding(s);if(!custId)D.partyName=s.party.name}else if(custId&&!D.amount)D.amount=r2(openInvoices(custId).reduce((a,s)=>a+outstanding(s),0));render()}
+function rcpForm(){const inv=openInvoices(D.customerId);const bt=D.bankTxnId&&byId(S.bankTxns,D.bankTxnId);
+ return head('Record payment received')+(bt?`<div class="banner">From bank statement: ${dmy(bt.date)} · ${esc(bt.desc)} · ${money(bt.credit)}</div>`:'')+`<div class="card"><div class="f"><div><label>Date received</label><input type="date" value="${D.date}" onchange="D.date=this.value"></div>
+ <div><label>Customer</label><select onchange="D.customerId=this.value;D.alloc={};D.auto=true;D.amount=D.amount||r2(openInvoices(this.value).reduce((a,s)=>a+outstanding(s),0));render()">${opt('','Walk-in / other',D.customerId)}${S.customers.map(c=>opt(c.id,c.name,D.customerId)).join('')}</select></div>
+ ${D.customerId?'':`<div><label>Received from</label><input value="${esc(D.partyName)}" oninput="D.partyName=this.value"></div>`}
+ <div><label>Amount (₹)</label><input type="number" step="any" value="${D.amount||''}" oninput="D.amount=+this.value"></div>
+ <div><label>Mode</label><select onchange="D.mode=this.value;render()">${RMODES.map(m=>opt(m,m,D.mode)).join('')}</select></div>
+ ${D.mode==='Cash'?'':`<div><label>${D.mode==='UPI'?'UPI transaction ref':D.mode==='Cheque'?'Cheque number':D.mode==='Demand draft'?'DD number':'UTR / reference'}</label><input value="${esc(D.ref)}" oninput="D.ref=this.value"></div>`}
+ ${/Cheque|Demand/.test(D.mode)?`<div><label>Drawn on bank</label><input value="${esc(D.bank)}" oninput="D.bank=this.value"></div>`:''}</div>
+ ${/Cheque|Demand/.test(D.mode)&&!D.bankTxnId?'<div class="mut">Cheques and DDs stay “Awaiting clearance” until you mark them cleared or the bank statement shows them.</div>':''}</div>
+ <div class="card"><div class="row"><h2 style="margin:0">Adjust against invoices</h2><span class="sp"></span><label style="color:var(--txt)"><input type="checkbox" ${D.auto?'checked':''} onchange="D.auto=this.checked;render()"> Oldest invoices first (automatic)</label></div>
+ ${D.auto?'<div class="mut">The amount will be adjusted against the oldest unpaid invoices. Any extra is kept as an advance.</div>':`<table><tr><th>Invoice</th><th>Date</th><th class="n">Balance due</th><th>Adjust</th></tr>${(D.customerId?inv:openInvoices().filter(s=>!s.customerId)).map(s=>`<tr><td>${esc(s.no)}</td><td>${dmy(s.date)}</td><td class="n">${f2(outstanding(s))}</td><td><input type="number" step="any" style="width:120px" value="${D.alloc[s.id]||''}" oninput="D.alloc['${s.id}']=Math.min(+this.value,${outstanding(s)})"></td></tr>`).join('')||'<tr><td colspan="4" class="mut">No unpaid invoices.</td></tr>'}</table>`}</div>
+ <div class="row"><button class="btn" onclick="saveRcp()">Save payment</button><button class="btn o" onclick="go('${D.bankTxnId?'bank':'payments'}')">Discard</button></div>`}
+function saveRcp(){if(!(D.amount>0))return toast('Enter the amount');const allocs=D.auto?null:Object.entries(D.alloc).map(([saleId,amt])=>({saleId,amt:+amt}));if(allocs&&r2(allocs.reduce((a,x)=>a+x.amt,0))>D.amount+0.009)return toast('Adjusted total is more than the amount received');
+ const back=D.bankTxnId?'bank':'payments';const r=postReceipt({...D,allocs});D=null;PAGE=back;commit('Payment '+r.no+' saved')}
+function setRcp(id,st){const r=byId(S.receipts,id);if(st==='Bounced'&&!confirm('Mark as bounced? The invoices become unpaid again.'))return;r.status=st;commit('Updated')}
+function cancelRcp(id){const r=byId(S.receipts,id);if(!confirm('Cancel receipt '+r.no+'?'))return;r.cancelled=true;const t=S.bankTxns.find(x=>x.link&&x.link.id===id);if(t){t.status='unmatched';t.link=null}commit('Receipt cancelled')}
+
+/* expenses */
+const EXKIND={OpEx:'OpEx (running cost)',CapEx:'CapEx (asset purchase)',Other:'Not a cost (payment / transfer)'};
+function catBehaviour(kind,cat){const f=(EXCATS[kind]||[]).find(c=>c[0]===cat);return f?f[1]:'Fixed'}
+function guessCat(desc){const d=(desc||'').toLowerCase();const rules=[[/dryer|dehydrat|amc|service charge|servicing/,'Dryer / machine service charges (AMC)'],[/label|sticker/,'Labels & stickers'],[/printing|printers|offset|flexo/,'Printing (pouches, wrappers, boxes)'],[/carton|corrugat|tape|shrink|box/,'Packing material (cartons, tape, shrink wrap)'],[/courier|parcel|speed post|india post|dtdc|delhivery|blue ?dart|professional couriers/,'Courier / parcel charges'],[/hamali|loading|unloading|coolie/,'Loading / unloading (hamali)'],[/amazon|flipkart|meesho|jiomart|swiggy|zepto|blinkit/,'Online marketplace fees (Amazon, Flipkart etc.)'],[/razorpay|paytm pg|cashfree|mdr|pg charges/,'Payment gateway / UPI / card charges'],[/firewood|charcoal/,'Fuel / gas / firewood for cooking'],[/pest|cleaning|housekeep/,'Cleaning & pest control'],[/epfo|esic|\bpf\b|\besi\b/,'PF / ESI contribution'],[/lab test|nabl|testing/,'Lab testing / quality checks'],[/interest/,'Interest on loan'],[/eb |tneb|kseb|bescom|electric|power|tangedco|msedcl/,'Electricity'],[/lorry|transport|freight|courier|logistic|tempo|delhivery|dtdc|porter/,'Transportation / freight'],[/salary|salaries|sal for/,'Employee salaries'],[/wage|labour|labor/,'Labour charges (daily / piece rate)'],[/rent/,'Rent'],[/warehouse|storage|cold/,'Inventory storage / warehouse'],[/advert|facebook|google ads|meta|marketing|flex|banner|print/,'Advertising & marketing'],[/audit|ca fee|accountant|chartered/,'Auditor / accountant fees'],[/fuel|petrol|diesel|hp gas|indane|bharat gas|lpg/,'Fuel / gas / firewood for cooking'],[/airtel|jio|bsnl|vodafone|vi |broadband|internet|mobile/,'Telephone & internet'],[/charges|sms chg|chg|annual fee|min bal/,'Bank charges'],[/gst|cbic|tax payment|tds/,'GST / tax paid to government'],[/fssai|licence|license/,'Licences & fees (FSSAI, trade licence)'],[/insurance|lic /,'Insurance'],[/emi|loan/,'Loan repayment (principal)']];
+ for(const [re,c] of rules)if(re.test(d))return c;for(const s of S.suppliers)if(s.name&&d.includes(s.name.toLowerCase().split(' ')[0]))return 'Supplier payment (for purchases)';return 'Other expense'}
+function kindOfCat(cat){for(const k in EXCATS)if(EXCATS[k].some(c=>c[0]===cat))return k;return 'OpEx'}
+function postExpense(d){const id=uid();const e={id,no:nextNo('EXP',d.date),date:d.date,kind:d.kind||'OpEx',category:d.category,behaviour:d.kind==='Other'?'—':(d.behaviour||catBehaviour(d.kind,d.category)),desc:d.desc||'',payee:d.payee||'',amount:r2(d.amount),gst:r2(d.gst||0),gstin:(d.gstin||'').toUpperCase(),mode:d.mode||'Cash',ref:d.ref||'',life:+d.life||0,bankTxnId:d.bankTxnId||'',cancelled:false};
+ S.expenses.push(e);if(d.bankTxnId){const t=byId(S.bankTxns,d.bankTxnId);if(t){t.status='matched';t.link={type:'expense',id}}}return e}
+function expenseITC(a,b){const o={igst:0,cgst:0,sgst:0};for(const e of S.expenses)if(!e.cancelled&&e.gst>0&&e.gstin&&e.kind!=='Other'&&e.date>=a&&e.date<=b){if(e.gstin.slice(0,2)!==S.settings.state)o.igst+=e.gst;else{o.cgst+=e.gst/2;o.sgst+=e.gst/2}}for(const k in o)o[k]=r2(o[k]);return o}
+let EXF={from:addDays(today(),-29),to:today()};
+R.expenses=()=>{if(D&&D.kind==='exp')return expForm();const list=S.expenses.filter(e=>e.date>=EXF.from&&e.date<=EXF.to).sort((a,b)=>b.date.localeCompare(a.date));const live=list.filter(e=>!e.cancelled);
+ const grpOf=c=>{for(const k in EXCATS){const f=EXCATS[k].find(x=>x[0]===c);if(f)return f[2]}return 'Other'};const byCat={};for(const e of live){const k=e.kind+'|'+e.category;byCat[k]=byCat[k]||{kind:e.kind,cat:e.category,grp:grpOf(e.category),beh:e.behaviour,amt:0,n:0};byCat[k].amt+=e.amount;byCat[k].n++}
+ const tot=k=>live.filter(e=>e.kind===k).reduce((a,e)=>a+e.amount,0);
+ return head('Expenses: OpEx & CapEx','<button class="btn" onclick="newExpense()">+ Add expense</button>')+`<div class="card row"><div><label>From</label><input type="date" value="${EXF.from}" onchange="EXF.from=this.value;render()"></div><div><label>To</label><input type="date" value="${EXF.to}" onchange="EXF.to=this.value;render()"></div><span class="sp"></span><button class="btn s o" onclick="csv('Expenses_'+EXF.from+'_'+EXF.to,['No','Date','Type','Category','Fixed/Variable','Description','Paid to','Amount','GST','Supplier GSTIN','Mode','Reference','Asset life (yrs)','Status'],S.expenses.filter(e=>e.date>=EXF.from&&e.date<=EXF.to).map(e=>[e.no,dmy(e.date),e.kind,e.category,e.behaviour,e.desc,e.payee,e.amount,e.gst,e.gstin,e.mode,e.ref,e.life||'',e.cancelled?'Cancelled':'Active']))">⬇ Excel (CSV)</button></div>
+ <div class="grid"><div class="card kpi"><div class="l">OpEx (running costs)</div><div class="v">${money0(tot('OpEx'))}</div></div><div class="card kpi"><div class="l">CapEx (assets bought)</div><div class="v">${money0(tot('CapEx'))}</div></div><div class="card kpi"><div class="l">Payments / transfers (not costs)</div><div class="v">${money0(tot('Other'))}</div></div></div>
+ <div class="grid2"><div class="card"><h2>By category</h2><table><tr><th>Category</th><th>Type</th><th class="n">Entries</th><th class="n">Amount</th></tr>${Object.values(byCat).sort((a,b)=>a.grp.localeCompare(b.grp)||b.amt-a.amt).map(c=>`<tr><td>${esc(c.cat)}<div class="mut" style="font-size:12px">${esc(c.grp)}</div></td><td>${c.kind}${c.kind==='OpEx'?' · '+c.beh:''}</td><td class="n">${c.n}</td><td class="n">${f2(c.amt)}</td></tr>`).join('')||'<tr><td class="mut">No expenses in this period.</td></tr>'}</table></div>
+ <div class="card mut" style="font-size:13.5px"><b>How these are used</b><br>• <b>OpEx</b> (transport, storage, electricity, labour, advertising, auditor…) reduces profit in the month it is spent.<br>• <b>Fixed</b> costs stay the same however much you sell; <b>Variable</b> costs rise with sales. This split drives the break-even analysis.<br>• <b>CapEx</b> (machines, vehicle, building) is spread over its useful life as depreciation.<br>• Supplier payments, GST payments, loans and drawings are recorded for cash tracking only and do not count as costs.<br>• GST on expenses with a supplier GSTIN is added to input tax credit in GSTR-3B.</div></div>
+ <div class="card scroll"><table><tr><th>No</th><th>Date</th><th>Category</th><th>Description / paid to</th><th>Mode</th><th class="n">Amount</th><th class="n">GST</th><th></th></tr>${list.map(e=>`<tr><td>${esc(e.no)}${e.cancelled?' '+pill('Cancelled','grey'):''}</td><td>${dmy(e.date)}</td><td>${esc(e.category)}<div class="mut">${e.kind}${e.kind==='OpEx'?' · '+e.behaviour:''}${e.kind==='CapEx'?' · '+e.life+' yrs':''}</div></td><td>${esc(e.desc)}${e.payee?'<div class="mut">'+esc(e.payee)+'</div>':''}</td><td>${esc(e.mode)}${e.bankTxnId?' ✓':''}</td><td class="n">${f2(e.amount)}</td><td class="n">${e.gst?f2(e.gst):''}</td><td style="white-space:nowrap">${e.cancelled?'':`<button class="btn s o" onclick="newExpense({...byId(S.expenses,'${e.id}'),date:today(),bankTxnId:''})" title="Copy as a new entry, e.g. for next month">Repeat</button><button class="btn s o" onclick="cancelExp('${e.id}')">Cancel</button>`}</td></tr>`).join('')||'<tr><td colspan="8" class="mut">No expenses in this period.</td></tr>'}</table></div>`};
+function newExpense(pre){PAGE='expenses';const p=pre||{};D={kind:'exp',date:p.date||today(),xkind:p.kind||'OpEx',category:p.category||'Transportation / freight',behaviour:p.behaviour||'',desc:p.desc||'',payee:p.payee||'',amount:p.amount||0,gst:p.gst||0,gstin:p.gstin||'',mode:p.mode||'Cash',ref:p.ref||'',life:p.life||5,bankTxnId:p.bankTxnId||''};if(!D.behaviour||D.behaviour==='—')D.behaviour=catBehaviour(D.xkind,D.category);render()}
+function expForm(){const bt=D.bankTxnId&&byId(S.bankTxns,D.bankTxnId);
+ return head('Add expense')+`<div class="banner" style="font-size:13.5px">Labels, pouches, jars and boxes that you keep in stock are better added as <b>Packing</b> items in Products and bought through Purchases, so the app deducts them in Production and counts them in product cost. Use this page for packing costs you do not track item by item.</div>`+(bt?`<div class="banner">From bank statement: ${dmy(bt.date)} · ${esc(bt.desc)} · ${money(bt.debit)}</div>`:'')+`<div class="card"><div class="f"><div><label>Date</label><input type="date" value="${D.date}" onchange="D.date=this.value"></div>
+ <div><label>Type</label><select onchange="D.xkind=this.value;D.category=EXCATS[this.value][0][0];D.behaviour=catBehaviour(D.xkind,D.category);render()">${Object.entries(EXKIND).map(([k,l])=>opt(k,l,D.xkind)).join('')}</select></div>
+ <div><label>Category (pick or type your own)</label><input list="excats" value="${esc(D.category)}" onchange="D.category=this.value;D.behaviour=catBehaviour(D.xkind,this.value);render()"><datalist id="excats">${EXCATS[D.xkind].map(c=>`<option value="${esc(c[0])}" label="${esc(c[2])}">`).join('')}</datalist></div>
+ ${D.xkind==='OpEx'?`<div><label>Cost behaviour</label><select onchange="D.behaviour=this.value">${opt('Fixed','Fixed (same every month)',D.behaviour)}${opt('Variable','Variable (goes up with sales)',D.behaviour)}</select></div>`:''}
+ ${D.xkind==='CapEx'?`<div><label>Useful life (years)</label><input type="number" step="any" value="${D.life}" oninput="D.life=+this.value"></div>`:''}
+ <div><label>Amount before GST (₹)</label><input type="number" step="any" value="${D.amount||''}" oninput="D.amount=+this.value"></div>
+ ${D.xkind==='Other'?'':`<div><label>GST paid on bill (₹, if any)</label><input type="number" step="any" value="${D.gst||''}" oninput="D.gst=+this.value"></div><div><label>Supplier GSTIN (for input credit)</label><input value="${esc(D.gstin)}" oninput="D.gstin=this.value"></div>`}
+ <div><label>Description</label><input value="${esc(D.desc)}" oninput="D.desc=this.value"></div><div><label>Paid to (vendor)</label><input list="vendl" value="${esc(D.payee)}" onchange="pickVendor(this.value)"><datalist id="vendl">${S.vendors.map(v=>`<option value="${esc(v.name)}">`).join('')}</datalist><a href="#" class="mut" onclick="go('vendors');return false">+ add a vendor</a></div>
+ <div><label>Paid by</label><select onchange="D.mode=this.value">${RMODES.map(m=>opt(m,m,D.mode)).join('')}</select></div><div><label>Reference</label><input value="${esc(D.ref)}" oninput="D.ref=this.value"></div></div></div>
+ <div class="row"><button class="btn" onclick="saveExp()">Save expense</button><button class="btn o" onclick="go('${D.bankTxnId?'bank':'expenses'}')">Discard</button></div>`}
+function pickVendor(n){D.payee=n;const v=S.vendors.find(x=>x.name.toLowerCase()===n.toLowerCase());if(v){if(v.service){D.category=v.service;D.xkind=kindOfCat(v.service);D.behaviour=catBehaviour(D.xkind,v.service)}if(v.gstin)D.gstin=v.gstin;render()}}
+function saveExp(){if(!(D.amount>0))return toast('Enter the amount');if(!D.category)return toast('Choose a category');const back=D.bankTxnId?'bank':'expenses';const e=postExpense({...D,kind:D.xkind});D=null;PAGE=back;commit('Expense '+e.no+' saved')}
+function cancelExp(id){const e=byId(S.expenses,id);if(!confirm('Cancel '+e.no+'?'))return;e.cancelled=true;const t=S.bankTxns.find(x=>x.link&&x.link.id===id);if(t){t.status='unmatched';t.link=null}commit('Cancelled')}
+
+/* bank statement import */
+let BIMP=null;
+async function unzip(buf){const dv=new DataView(buf);let eocd=-1;for(let i=buf.byteLength-22;i>=Math.max(0,buf.byteLength-66000);i--)if(dv.getUint32(i,true)===0x06054b50){eocd=i;break}if(eocd<0)throw new Error('Not a valid .xlsx file');
+ const n=dv.getUint16(eocd+10,true);let p=dv.getUint32(eocd+16,true);const files={};
+ for(let k=0;k<n;k++){const method=dv.getUint16(p+10,true),csize=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),el=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),off=dv.getUint32(p+42,true);
+  const name=new TextDecoder().decode(new Uint8Array(buf,p+46,nl));files[name]={method,csize,off};p+=46+nl+el+cl}
+ return async name=>{const f=files[name];if(!f)return null;const ln=dv.getUint16(f.off+26,true),le=dv.getUint16(f.off+28,true);const data=new Uint8Array(buf,f.off+30+ln+le,f.csize);
+  if(f.method===0)return new TextDecoder().decode(data);const ds=new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'));return await new Response(ds).text()}}
+async function readXlsx(buf){const get=await unzip(buf);const P=x=>new DOMParser().parseFromString(x,'application/xml');
+ const ss=[];const sx=await get('xl/sharedStrings.xml');if(sx)P(sx).querySelectorAll('si').forEach(si=>ss.push([...si.getElementsByTagName('t')].map(t=>t.textContent).join('')));
+ let sheet='xl/worksheets/sheet1.xml';try{const wb=P(await get('xl/workbook.xml'));const first=wb.getElementsByTagName('sheet')[0];const rid=first.getAttribute('r:id')||first.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships','id');const rels=P(await get('xl/_rels/workbook.xml.rels'));for(const r of rels.getElementsByTagName('Relationship'))if(r.getAttribute('Id')===rid){const t=r.getAttribute('Target');sheet=t.startsWith('/')?t.slice(1):'xl/'+t}}catch(e){}
+ const x=await get(sheet);if(!x)throw new Error('Sheet not found');const rows=[];P(x).querySelectorAll('row').forEach(row=>{const r=[];row.querySelectorAll('c').forEach(c=>{const ref=c.getAttribute('r')||'';let col=0;for(const ch of ref.replace(/\d/g,''))col=col*26+ch.charCodeAt(0)-64;const t=c.getAttribute('t');const v=c.getElementsByTagName('v')[0];let val=v?v.textContent:'';if(t==='s')val=ss[+val]||'';else if(t==='inlineStr')val=[...c.getElementsByTagName('t')].map(z=>z.textContent).join('');r[(col||r.length+1)-1]=val});rows.push([...r].map(z=>z??''))});return rows}
+function parseCSV(txt){const rows=[];let row=[],f='',q=false;const d=(txt.split('\n')[0].split(';').length>txt.split('\n')[0].split(',').length)?';':(txt.includes('\t')&&!txt.includes(','))?'\t':',';
+ for(let i=0;i<txt.length;i++){const c=txt[i];if(q){if(c==='"'){if(txt[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===d){row.push(f);f=''}else if(c==='\n'){row.push(f.replace(/\r$/,''));rows.push(row);row=[];f=''}else f+=c}if(f||row.length){row.push(f);rows.push(row)}return rows}
+const MON={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+function parseDate(v){v=String(v||'').trim();if(!v)return '';if(/^\d{5}(\.\d+)?$/.test(v)){const d=new Date(Date.UTC(1899,11,30)+Math.floor(+v)*864e5);return d.toISOString().slice(0,10)}
+ let m=v.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);if(m)return m[1]+'-'+pad(m[2])+'-'+pad(m[3]);
+ m=v.match(/^(\d{1,2})[-\/. ](\d{1,2}|[A-Za-z]{3,})[-\/. ,]+(\d{2,4})/);if(m){const mo=isNaN(m[2])?MON[m[2].slice(0,3).toLowerCase()]:+m[2];let y=+m[3];if(y<100)y+=2000;if(mo)return y+'-'+pad(mo)+'-'+pad(m[1])}return ''}
+const parseAmt=v=>{const s=String(v||'').replace(/[₹,\s]|INR|Rs\.?/gi,'');const n=parseFloat(s.replace(/(cr|dr)$/i,''));return isNaN(n)?0:n};
+async function bankFile(file){if(!file)return;try{let rows;const name=file.name.toLowerCase();if(name.endsWith('.xlsx'))rows=await readXlsx(await file.arrayBuffer());else if(name.endsWith('.xls'))return alert('This is an old .xls file. Open it in Excel and use File > Save As > "Excel Workbook (.xlsx)" or "CSV", then import that.');else rows=parseCSV(await file.text());
+ rows=rows.map(r=>r.map(c=>String(c??'').trim()));let h=rows.findIndex(r=>{const j=r.join(' ').toLowerCase();return /date/.test(j)&&/(narration|description|particular|remark|details|transaction)/.test(j)});if(h<0)h=0;
+ const hdr=rows[h].map((x,i)=>x||'Column '+(i+1));const find=re=>hdr.findIndex(x=>re.test(x.toLowerCase()));
+ const map={date:find(/^(txn |tran |transaction |value )?date|^date/),desc:find(/narration|description|particular|remark|details/),ref:find(/ref|chq|cheque|utr/),debit:find(/withdraw|debit|dr\b|paid out/),credit:find(/deposit|credit|cr\b|paid in/),amount:-1,type:-1,bal:find(/balance/)};
+ if(map.debit<0&&map.credit<0){map.amount=find(/amount/);map.type=find(/type|dr\/cr|cr\/dr/)}
+ BIMP={file:file.name,hdr,rows:rows.slice(h+1).filter(r=>r.some(c=>c)),map};render()}catch(e){alert('Could not read this file: '+e.message)}}
+function bimpRows(){const m=BIMP.map;return BIMP.rows.map(r=>{const date=parseDate(r[m.date]);let debit=0,credit=0;if(m.amount>=0){const a=parseAmt(r[m.amount]);const ty=String(r[m.type]||r[m.amount]||'').toLowerCase();if(/dr|debit|withdraw/.test(ty)||a<0)debit=Math.abs(a);else credit=Math.abs(a)}else{debit=Math.abs(parseAmt(r[m.debit]));credit=Math.abs(parseAmt(r[m.credit]))}
+ return{date,desc:m.desc>=0?r[m.desc]:'',ref:m.ref>=0?r[m.ref]:'',debit:r2(debit),credit:r2(credit),bal:m.bal>=0?parseAmt(r[m.bal]):null}}).filter(x=>x.date&&(x.debit||x.credit))}
+function doImport(){const rows=bimpRows();let added=0,dup=0;const key=x=>x.date+'|'+x.debit+'|'+x.credit+'|'+(x.ref||x.desc).slice(0,40);const have=new Set(S.bankTxns.map(key));
+ for(const x of rows){if(have.has(key(x))){dup++;continue}S.bankTxns.push({id:uid(),...x,status:'unmatched',link:null,file:BIMP.file});have.add(key(x));added++}
+ const auto=autoMatch();BIMP=null;commit(`${added} lines imported${dup?', '+dup+' duplicates skipped':''}. ${auto} matched automatically.`)}
+function modeFromDesc(d){d=(d||'').toLowerCase();return /upi/.test(d)?'UPI':/neft|rtgs|imps|ift/.test(d)?'NEFT/RTGS/IMPS':/clg|chq|cheque|clearing/.test(d)?'Cheque':/dd |draft/.test(d)?'Demand draft':/cash|cdm/.test(d)?'Cash':'NEFT/RTGS/IMPS'}
+function rcpCandidates(t){return S.receipts.filter(r=>!r.cancelled&&r.status!=='Bounced'&&!r.bankTxnId&&r.mode!=='Cash'&&Math.abs(r.amount-t.credit)<0.01&&Math.abs(new Date(r.date)-new Date(t.date))<=10*864e5)}
+function invCandidates(t){return openInvoices().filter(s=>Math.abs(outstanding(s)-t.credit)<0.01)}
+function autoMatch(){let n=0;for(const t of S.bankTxns.filter(x=>x.status==='unmatched'&&x.credit>0)){const c=rcpCandidates(t);if(c.length===1){linkRcp(t.id,c[0].id,true);n++}}return n}
+function linkRcp(tid,rid,quiet){const t=byId(S.bankTxns,tid),r=byId(S.receipts,rid);t.status='matched';t.link={type:'receipt',id:rid};r.bankTxnId=tid;if(r.status==='Awaiting clearance')r.status='Received';if(!quiet)commit('Matched: '+r.no)}
+function unlinkTxn(tid){const t=byId(S.bankTxns,tid);if(t.link&&t.link.type==='receipt'){const r=byId(S.receipts,t.link.id);if(r)r.bankTxnId=''}t.status='unmatched';t.link=null;commit('Unmatched')}
+function ignoreTxn(tid){const t=byId(S.bankTxns,tid);t.status='ignored';commit()}
+function rcpFromTxn(tid,saleId){const t=byId(S.bankTxns,tid);const s=saleId&&byId(S.sales,saleId);newReceipt(s?s.customerId:'',saleId||null,{date:t.date,amount:t.credit,mode:modeFromDesc(t.desc),ref:t.ref||t.desc.slice(0,40),bankTxnId:tid})}
+function custRcpFromTxn(tid,cid){const t=byId(S.bankTxns,tid);newReceipt(cid,null,{date:t.date,amount:t.credit,mode:modeFromDesc(t.desc),ref:t.ref||t.desc.slice(0,40),bankTxnId:tid})}
+function expFromTxn(tid){const t=byId(S.bankTxns,tid);const cat=guessCat(t.desc);newExpense({date:t.date,kind:kindOfCat(cat),category:cat,amount:t.debit,desc:t.desc.slice(0,80),mode:modeFromDesc(t.desc),ref:t.ref,bankTxnId:tid})}
+R.bank=()=>{if(D&&D.kind==='rcp')return rcpForm();if(D&&D.kind==='exp')return expForm();
+ if(BIMP){const m=BIMP.map;const sel=k=>`<select onchange="BIMP.map.${k}=+this.value;render()">${opt(-1,'— none —',m[k])}${BIMP.hdr.map((h,i)=>opt(i,h,m[k])).join('')}</select>`;const pv=bimpRows();
+  return head('Import bank statement')+`<div class="card"><b>${esc(BIMP.file)}</b> · ${BIMP.rows.length} rows found. Check that each field points to the right column.<div class="f" style="margin-top:8px"><div><label>Date</label>${sel('date')}</div><div><label>Narration / description</label>${sel('desc')}</div><div><label>Reference / cheque no.</label>${sel('ref')}</div><div><label>Withdrawal (debit)</label>${sel('debit')}</div><div><label>Deposit (credit)</label>${sel('credit')}</div><div><label>Single amount column</label>${sel('amount')}</div><div><label>Dr/Cr column</label>${sel('type')}</div><div><label>Balance</label>${sel('bal')}</div></div></div>
+  <div class="card scroll"><h2>Preview (${pv.length} valid lines)</h2><table><tr><th>Date</th><th>Description</th><th>Ref</th><th class="n">Out</th><th class="n">In</th></tr>${pv.slice(0,12).map(x=>`<tr><td>${dmy(x.date)}</td><td>${esc(x.desc)}</td><td>${esc(x.ref)}</td><td class="n">${x.debit?f2(x.debit):''}</td><td class="n">${x.credit?f2(x.credit):''}</td></tr>`).join('')}</table></div>
+  <div class="row"><button class="btn" onclick="doImport()" ${pv.length?'':'disabled'}>Import ${pv.length} lines</button><button class="btn o" onclick="BIMP=null;render()">Cancel</button></div>`}
+ const f=TAB.bank||'unmatched';const list=S.bankTxns.filter(t=>f==='all'||t.status===f).sort((a,b)=>b.date.localeCompare(a.date));const last=[...S.bankTxns].filter(t=>t.bal!=null).sort((a,b)=>a.date.localeCompare(b.date)).pop();
+ const sIn=S.bankTxns.filter(t=>t.status!=='ignored').reduce((a,t)=>a+t.credit,0),sOut=S.bankTxns.filter(t=>t.status!=='ignored').reduce((a,t)=>a+t.debit,0);
+ return head('Bank statement',`<label class="btn" style="margin:2px">⬆ Import statement (CSV / Excel)<input type="file" accept=".csv,.xlsx,.xls,.txt" style="display:none" onchange="bankFile(this.files[0])"></label>`)+
+ `<div class="card mut" style="font-size:13.5px">Download your statement from net banking as <b>Excel (.xlsx)</b> or <b>CSV</b> and import it here. Money coming in is matched to UPI, cheque and NEFT payments you recorded, or to unpaid invoices of the same amount. Money going out can be saved as an expense in one click. Importing the same statement twice is safe: duplicates are skipped.</div>
+ <div class="grid"><div class="card kpi"><div class="l">Bank balance (last statement)</div><div class="v">${last?money0(last.bal):'-'}</div><div class="s">${last?'as on '+dmy(last.date):''}</div></div><div class="card kpi"><div class="l">Money in (imported)</div><div class="v">${money0(sIn)}</div></div><div class="card kpi"><div class="l">Money out (imported)</div><div class="v">${money0(sOut)}</div></div><div class="card kpi"><div class="l">To review</div><div class="v">${S.bankTxns.filter(t=>t.status==='unmatched').length}</div></div></div>`+
+ tabs('bank',[['unmatched','To review'],['matched','Matched'],['ignored','Ignored'],['all','All']])+
+ `<div class="card scroll"><table><tr><th>Date</th><th>Description</th><th class="n">Out</th><th class="n">In</th><th>Suggestion / link</th><th></th></tr>${list.slice(0,300).map(t=>{let sug='',act='';
+  if(t.status==='matched'){const d=t.link.type==='receipt'?byId(S.receipts,t.link.id):byId(S.expenses,t.link.id);sug=d?`${t.link.type==='receipt'?'Payment':'Expense'} ${esc(d.no)} · ${esc(d.partyName||d.category)}`:'';act=`<button class="btn s o" onclick="unlinkTxn('${t.id}')">Unmatch</button>`}
+  else if(t.status==='ignored'){act=`<button class="btn s o" onclick="byId(S.bankTxns,'${t.id}').status='unmatched';commit()">Restore</button>`}
+  else if(t.credit>0){const rc=rcpCandidates(t),ic=invCandidates(t);sug=rc.map(r=>`<button class="btn s" onclick="linkRcp('${t.id}','${r.id}')">Match ${esc(r.no)} · ${esc(r.partyName)} (${esc(r.mode)})</button>`).join('')+ic.slice(0,3).map(s=>`<button class="btn s o" onclick="rcpFromTxn('${t.id}','${s.id}')">Payment for ${esc(s.no)} · ${esc(s.party.name)}</button>`).join('')+(rc.length||ic.length?'':S.customers.filter(c=>c.name&&t.desc.toLowerCase().includes(c.name.toLowerCase().split(' ')[0])).slice(0,2).map(c=>`<button class="btn s o" onclick="custRcpFromTxn('${t.id}','${c.id}')">Payment from ${esc(c.name)}</button>`).join(''));
+   act=`<button class="btn s o" onclick="rcpFromTxn('${t.id}')">Record as payment</button><button class="btn s o" onclick="ignoreTxn('${t.id}')">Ignore</button>`}
+  else{sug=`<span class="mut">Looks like: ${esc(guessCat(t.desc))}</span>`;act=`<button class="btn s" onclick="expFromTxn('${t.id}')">Save as expense</button><button class="btn s o" onclick="ignoreTxn('${t.id}')">Ignore</button>`}
+  return `<tr><td>${dmy(t.date)}</td><td style="max-width:340px">${esc(t.desc)}${t.ref?`<div class="mut">${esc(t.ref)}</div>`:''}</td><td class="n">${t.debit?f2(t.debit):''}</td><td class="n">${t.credit?f2(t.credit):''}</td><td>${sug}</td><td style="white-space:nowrap">${act}</td></tr>`}).join('')||'<tr><td colspan="6" class="mut">Nothing here. Import a statement to begin.</td></tr>'}</table></div>`};
+
+/* profit & loss + break-even */
+let PB={from:addDays(today(),-89),to:today()};
+function depreciation(a,b){let v=0;const A=new Date(a),B=new Date(b);for(const e of S.expenses)if(!e.cancelled&&e.kind==='CapEx'&&e.life>0){const s=new Date(e.date),end=new Date(addDays(e.date,Math.round(e.life*365)));const lo=Math.max(s,A),hi=Math.min(end,B);if(hi>=lo)v+=e.amount/(e.life*365)*((hi-lo)/864e5+1)}return r2(v)}
+function pnl(a,b){const sales=S.sales.filter(s=>!s.cancelled&&s.date>=a&&s.date<=b),cns=S.salesReturns.filter(r=>!r.cancelled&&r.date>=a&&r.date<=b);
+ const rev=r2(sales.reduce((x,s)=>x+s.taxable,0)-cns.reduce((x,r)=>x+r.taxable,0));
+ const costOf=l=>l.qty*(l.cost!=null?l.cost:unitCostNow(l.itemId));
+ const cogs=r2(sales.reduce((x,s)=>x+s.lines.reduce((y,l)=>y+costOf(l),0),0)-cns.filter(r=>r.restock).reduce((x,r)=>{const inv=byId(S.sales,r.invoiceId);return x+r.lines.reduce((y,l)=>{const o=inv&&inv.lines[l.idx];return y+l.qty*((o&&o.cost)||unitCostNow(l.itemId))},0)},0));
+ const writeoff=r2(-S.adjustments.filter(x=>!x.cancelled&&x.qty<0&&x.date>=a&&x.date<=b).reduce((s,x)=>{const bt=byId(S.batches,x.batchId);return s+x.qty*((bt&&bt.cost)||itemCost(x.itemId))},0));
+ const ex=S.expenses.filter(e=>!e.cancelled&&e.kind==='OpEx'&&e.date>=a&&e.date<=b);const cats={};for(const e of ex){cats[e.category]=cats[e.category]||{amt:0,beh:e.behaviour};cats[e.category].amt+=e.amount}
+ const opex=r2(ex.reduce((x,e)=>x+e.amount,0)),varEx=r2(ex.filter(e=>e.behaviour==='Variable').reduce((x,e)=>x+e.amount,0)),fixEx=r2(opex-varEx),dep=depreciation(a,b);
+ const gross=r2(rev-cogs-writeoff);return{rev,cogs,writeoff,gross,opex,varEx,fixEx,dep,cats,net:r2(gross-opex-dep),sales,cns}}
+R.profit=()=>{const P=pnl(PB.from,PB.to);const days=Math.round((new Date(PB.to)-new Date(PB.from))/864e5)+1,mo=days/30.44;
+ const variable=P.cogs+P.varEx+P.writeoff,fixed=P.fixEx+P.dep,cm=P.rev-variable,cmr=P.rev?cm/P.rev:0,be=cmr>0?fixed/cmr:null,mos=be!=null&&P.rev?(P.rev-be)/P.rev*100:null;
+ const pm={};for(const s of P.sales)for(const l of s.lines){pm[l.itemId]=pm[l.itemId]||{q:0,rev:0,cost:0};pm[l.itemId].q+=l.qty;pm[l.itemId].rev+=l.taxable;pm[l.itemId].cost+=l.qty*(l.cost!=null?l.cost:unitCostNow(l.itemId))}
+ const varShare=P.rev?P.varEx/P.rev:0;const prows=Object.entries(pm).map(([id,v])=>{const it=byId(S.items,id)||{name:'?',unit:''};const price=v.rev/v.q,vc=v.cost/v.q+price*varShare,cu=price-vc;const share=P.rev?v.rev/P.rev:0;return{it,q:v.q,rev:v.rev,price,vc,cu,cmp:price?cu/price*100:0,beu:cu>0?(fixed/mo*share)/cu:null}}).sort((a,b)=>b.rev-a.rev);
+ const top=prows[0];WIF=WIF||{price:top?r2(top.price):40,vc:top?r2(top.vc):25,fixed:r2(fixed/mo)||10000,unit:top?top.it.unit:'units'};
+ const prow=(l,v,cls,ind)=>`<tr><td style="${ind?'padding-left:24px':''}">${l}</td><td class="n ${cls||''}">${typeof v==='number'?money(v):v}</td></tr>`;
+ return head('Profit & break-even')+`<div class="card row"><div><label>From</label><input type="date" value="${PB.from}" onchange="PB.from=this.value;WIF=null;render()"></div><div><label>To</label><input type="date" value="${PB.to}" onchange="PB.to=this.value;WIF=null;render()"></div>
+ <div class="row">${[['This month',today().slice(0,8)+'01',today()],['Last 3 months',addDays(today(),-89),today()],['This financial year',fyStart(today()),today()]].map(([l,a,b])=>`<button class="btn s o" onclick="PB={from:'${a}',to:'${b}'};WIF=null;render()">${l}</button>`).join('')}</div><span class="sp"></span><span class="mut">${days} days (${r2(mo)} months)</span></div>
+ <div class="grid2"><div class="card"><h2>Profit & loss</h2><table>${prow('Sales (before GST, after returns)',P.rev)}${prow('Cost of goods sold (materials + making)',-P.cogs,'',1)}${P.writeoff?prow('Stock written off / wastage',-P.writeoff,'',1):''}${prow('<b>Gross profit</b>',`<b>${money(P.gross)}</b> <span class="mut">${P.rev?r2(P.gross/P.rev*100):0}%</span>`)}
+  ${Object.entries(P.cats).sort((a,b)=>b[1].amt-a[1].amt).map(([c,v])=>prow(esc(c)+` <span class="mut">(${v.beh})</span>`,-v.amt,'',1)).join('')}${P.dep?prow('Depreciation on assets (CapEx)',-P.dep,'',1):''}
+  ${prow('<b>Net profit</b>',`<b class="${P.net>=0?'up':'dn'}">${money(P.net)}</b>`)}</table>
+  <button class="btn s o" style="margin-top:8px" onclick="csv('Profit_and_loss_'+PB.from+'_'+PB.to,['Line','Amount'],[['Sales',${P.rev}],['Cost of goods sold',${-P.cogs}],['Write-offs',${-P.writeoff}],['Gross profit',${P.gross}],...${JSON.stringify(Object.entries(P.cats).map(([c,v])=>[c,-r2(v.amt)]))},['Depreciation',${-P.dep}],['Net profit',${P.net}]])">⬇ Excel (CSV)</button></div>
+ <div class="card"><h2>Break-even (whole business)</h2><table>${prow('Fixed costs per month (fixed OpEx + depreciation)',fixed/mo)}${prow('Variable costs as % of sales',P.rev?r2(variable/P.rev*100)+'%':'-')}${prow('Contribution margin (what each ₹100 of sales leaves to cover fixed costs)',P.rev?'₹'+r2(cmr*100):'-')}
+  ${prow('<b>Break-even sales per month</b>',be!=null?`<b>${money0(be/mo)}</b>`:'<span class="dn">Not reachable: prices do not cover variable costs</span>')}${prow('Your actual sales per month',P.rev/mo)}${prow('Margin of safety',mos==null?'-':`<b class="${mos>=0?'up':'dn'}">${r2(mos)}%</b> ${mos>=0?'above':'below'} break-even`)}${be!=null&&P.rev?prow('Break-even reached by day (of a 30-day month)',(()=>{const d=Math.ceil(be/P.rev*30);return d>30?'<span class="dn">Not reached at current sales</span>':'Day '+d})()):''}</table>
+  <div class="mut" style="font-size:13px;margin-top:6px">Mark each expense as Fixed or Variable in Expenses for an accurate result. Products with no cost entered are treated as zero cost.</div></div></div>
+ <div class="card scroll"><h2>Contribution by product</h2><table><tr><th>Product</th><th class="n">Sold</th><th class="n">Sales</th><th class="n">Avg price</th><th class="n">Variable cost/unit</th><th class="n">Contribution/unit</th><th class="n">Contribution %</th><th class="n">Break-even units/month*</th><th></th></tr>${prows.map(p=>`<tr><td>${esc(p.it.name)}</td><td class="n">${qf(p.q)} ${esc(p.it.unit)}</td><td class="n">${money0(p.rev)}</td><td class="n">${f2(p.price)}</td><td class="n">${f2(p.vc)}</td><td class="n ${p.cu<0?'dn':''}">${f2(p.cu)}</td><td class="n">${r2(p.cmp)}%</td><td class="n">${p.beu==null?'-':Math.ceil(p.beu).toLocaleString('en-IN')}</td><td><button class="btn s o" onclick="WIF={price:${r2(p.price)},vc:${r2(p.vc)},fixed:${r2(fixed/mo)||0},unit:'${esc(p.it.unit)}'};render()">Use in calculator</button></td></tr>`).join('')||'<tr><td colspan="9" class="mut">No sales in this period.</td></tr>'}</table><div class="mut" style="font-size:12.5px">*Each product's share of fixed costs is set by its share of sales.</div></div>
+ <div class="card"><h2>What-if calculator</h2><div class="f"><div><label>Selling price per unit (₹, before GST)</label><input type="number" step="any" value="${WIF.price}" oninput="WIF.price=+this.value;wif()"></div><div><label>Variable cost per unit (₹)</label><input type="number" step="any" value="${WIF.vc}" oninput="WIF.vc=+this.value;wif()"></div><div><label>Fixed costs per month (₹)</label><input type="number" step="any" value="${WIF.fixed}" oninput="WIF.fixed=+this.value;wif()"></div></div><div id="wif">${wifHTML()}</div></div>`};
+let WIF=null;function wif(){document.getElementById('wif').innerHTML=wifHTML()}
+function wifHTML(){const {price,vc,fixed,unit}=WIF;const cu=price-vc;if(!(cu>0))return '<div class="dn">The price must be higher than the variable cost, or the business can never break even.</div>';const beu=fixed/cu,ber=beu*price;
+ const maxU=Math.max(10,Math.ceil(beu*2)),W=600,H=220,x=u=>40+u/maxU*(W-60),maxV=Math.max(maxU*price,fixed+maxU*vc),y=v=>H-25-v/maxV*(H-40);
+ const svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:700px"><line x1="40" y1="${y(0)}" x2="${W-20}" y2="${y(0)}" stroke="#ccc"/><line x1="${x(0)}" y1="${y(fixed)}" x2="${x(maxU)}" y2="${y(fixed)}" stroke="#aaa" stroke-dasharray="4"/><line x1="${x(0)}" y1="${y(fixed)}" x2="${x(maxU)}" y2="${y(fixed+maxU*vc)}" stroke="#c0392b" stroke-width="2.5"/><line x1="${x(0)}" y1="${y(0)}" x2="${x(maxU)}" y2="${y(maxU*price)}" stroke="#1e8449" stroke-width="2.5"/><circle cx="${x(beu)}" cy="${y(ber)}" r="6" fill="#c8741a"/><text x="${x(beu)+8}" y="${y(ber)-8}" font-size="12">Break-even: ${Math.ceil(beu).toLocaleString('en-IN')} ${esc(unit)}</text><text x="${W-22}" y="${y(maxU*price)-6}" font-size="11" text-anchor="end" fill="#1e8449">Sales</text><text x="${W-22}" y="${y(fixed+maxU*vc)+14}" font-size="11" text-anchor="end" fill="#c0392b">Total cost</text><text x="${x(0)+4}" y="${y(fixed)-4}" font-size="10" fill="#888">Fixed cost</text><text x="${x(maxU)}" y="${H-8}" font-size="10" text-anchor="end" fill="#888">${maxU.toLocaleString('en-IN')} ${esc(unit)}/month</text></svg>`;
+ return `<div class="grid"><div class="kpi"><div class="l">Contribution per unit</div><div class="v">${money(cu)}</div><div class="s">${r2(cu/price*100)}% of price</div></div><div class="kpi"><div class="l">Break-even quantity / month</div><div class="v">${Math.ceil(beu).toLocaleString('en-IN')} ${esc(unit)}</div><div class="s">about ${Math.ceil(beu/26).toLocaleString('en-IN')} per working day</div></div><div class="kpi"><div class="l">Break-even sales / month</div><div class="v">${money0(ber)}</div></div><div class="kpi"><div class="l">Profit at 1.5× break-even</div><div class="v up">${money0(beu*0.5*cu)}</div></div></div>${svg}`}
+
+/* ================= PARTIES: vendors + analysis (customers, suppliers, vendors) ================= */
+const inrS=n=>{n=+n||0;const a=Math.abs(n),s=n<0?'-':'';return a>=1e7?s+'₹'+(a/1e7).toFixed(2)+' Cr':a>=1e5?s+'₹'+(a/1e5).toFixed(2)+' L':s+'₹'+Math.round(a).toLocaleString('en-IN')};
+const daysBetween=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
+function chg(cur,prev){if(!prev)return '<span class="mut">—</span>';const p=(cur-prev)/prev*100;return `<span class="${p>=0?'up':'dn'}">${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(1)}%</span>`}
+R.vendors=()=>masterPage('vendors');
+let PA={from:fyStart(today()),to:today()};
+R.parties=()=>{const tab=TAB.par||'c';const t=today();const inP2=d=>d>=PA.from&&d<=PA.to;
+ const top=head('Customers, suppliers & vendors: analysis')+`<div class="card row"><div><label>From</label><input type="date" value="${PA.from}" onchange="PA.from=this.value;render()"></div><div><label>To</label><input type="date" value="${PA.to}" onchange="PA.to=this.value;render()"></div>${[['This month',t.slice(0,8)+'01'],['Last 90 days',addDays(t,-89)],['This FY',fyStart(t)]].map(([l,a])=>`<button class="btn s o" onclick="PA={from:'${a}',to:'${t}'};render()">${l}</button>`).join('')}<span class="sp"></span><button class="btn s o" onclick="go('customers')">Manage customers</button><button class="btn s o" onclick="go('suppliers')">Manage suppliers</button><button class="btn s o" onclick="go('vendors')">Manage vendors</button></div>`+
+ tabs('par',[['c','Customers'],['s','Suppliers (goods)'],['v','Vendors (services & expenses)']]);
+ RD={};
+ if(tab==='c'){const rows={};const add=(k,n)=>rows[k]=rows[k]||{name:n,inv:0,sales:0,taxable:0,cost:0,ret:0,last:'',first:'',items:{},dues:0};
+  for(const s of S.sales.filter(s=>!s.cancelled)){const k=s.customerId||'_walk';const r=add(k,s.customerId?s.party.name:'Walk-in customers');if(!r.first||s.date<r.first)r.first=s.date;if(s.date>r.last)r.last=s.date;r.dues+=outstanding(s);if(!inP2(s.date))continue;r.inv++;r.sales+=s.total;r.taxable+=s.taxable;for(const l of s.lines){r.cost+=l.qty*(l.cost??unitCostNow(l.itemId));r.items[l.name]=(r.items[l.name]||0)+l.taxable}}
+  for(const x of S.salesReturns.filter(x=>!x.cancelled&&inP2(x.date))){const s=byId(S.sales,x.invoiceId);const k=(s&&s.customerId)||'_walk';if(rows[k])rows[k].ret+=x.total}
+  for(const c of S.customers)add(c.id,c.name);
+  const list=Object.entries(rows).map(([k,r])=>{const idle=r.last?daysBetween(r.last,t):null;const seg=k==='_walk'?'Walk-in':!r.last?'No purchase yet':idle<=30?'Active':idle<=60?'Slowing':idle<=120?'At risk':'Lost';return{...r,k,idle,seg,gm:r.taxable?(r.taxable-r.cost)/r.taxable*100:0}}).sort((a,b)=>b.sales-a.sales);
+  const tot=list.reduce((a,r)=>a+r.sales,0);const segs={};list.forEach(r=>{segs[r.seg]=(segs[r.seg]||0)+1});const segC={Active:'green',Slowing:'amber','At risk':'amber',Lost:'red','No purchase yet':'grey','Walk-in':'grey'};
+  let cum=0;const pareto=list.filter(r=>r.sales>0).findIndex(r=>(cum+=r.sales)>=tot*0.8)+1;
+  return top+`<div class="grid">${['Active','Slowing','At risk','Lost','No purchase yet'].map(s=>`<div class="card kpi"><div class="l">${s}</div><div class="v">${segs[s]||0}</div><div class="s">${{Active:'bought in last 30 days',Slowing:'31-60 days',['At risk']:'61-120 days',Lost:'over 120 days','No purchase yet':'added but never billed'}[s]}</div></div>`).join('')}</div>
+  ${tot?`<div class="banner">${pareto} customer(s) bring 80% of your sales in this period. Look after them first; call the “At risk” ones.</div>`:''}`+
+  rtable('pc','Customer analysis',['Customer','Segment','Invoices','Sales (with GST)','Share %','Avg invoice','Gross margin %','Returns','Return %','Balance due','Last purchase','Days since','Top product'],list.map(r=>[r.name,r.seg,r.inv,r2(r.sales),tot?r2(r.sales/tot*100):0,r.inv?r2(r.sales/r.inv):0,r2(r.gm),r2(r.ret),r.sales?r2(r.ret/r.sales*100):0,r2(r.dues),dmy(r.last),r.idle??'',(Object.entries(r.items).sort((a,b)=>b[1]-a[1])[0]||[''])[0]]))}
+ if(tab==='s'){const rows={};for(const sp of S.suppliers)rows[sp.id]={name:sp.name,gstin:sp.gstin,bills:0,val:0,itc:0,ret:0,items:{},last:'',lead:sp.leadDays||''};
+  for(const p of S.purchases.filter(p=>!p.cancelled)){const k=p.supplierId||'_none';rows[k]=rows[k]||{name:p.party.name,gstin:'',bills:0,val:0,itc:0,ret:0,items:{},last:''};const r=rows[k];if(p.date>r.last)r.last=p.date;if(!inP2(p.date))continue;r.bills++;r.val+=p.total;r.itc+=p.cgst+p.sgst+p.igst;for(const l of p.lines){const it=r.items[l.name]=r.items[l.name]||{q:0,v:0,first:null,lastR:null};it.q+=l.qty;it.v+=l.taxable;if(it.first==null)it.first=l.rate;it.lastR=l.rate}}
+  for(const x of S.purchaseReturns.filter(x=>!x.cancelled&&inP2(x.date))){const p=byId(S.purchases,x.purchaseId);const k=(p&&p.supplierId)||'_none';if(rows[k])rows[k].ret+=x.total}
+  const list=Object.values(rows).sort((a,b)=>b.val-a.val);const tot=list.reduce((a,r)=>a+r.val,0);
+  const priceRows=[];for(const r of list)for(const [n,it] of Object.entries(r.items))priceRows.push([r.name,n,r3(it.q),it.q?r2(it.v/it.q):0,it.first,it.lastR,it.first?r2((it.lastR-it.first)/it.first*100):0]);
+  return top+rtable('ps','Supplier analysis',['Supplier','GSTIN','Bills','Purchases (with GST)','Share %','GST input credit','Returned','Return %','Items supplied','Last bill','Lead time (days)'],list.map(r=>[r.name,r.gstin||'',r.bills,r2(r.val),tot?r2(r.val/tot*100):0,r2(r.itc),r2(r.ret),r.val?r2(r.ret/r.val*100):0,Object.keys(r.items).join(', '),dmy(r.last),r.lead||'']),'A high return % points to quality problems. A single supplier above 60% share is a supply risk; keep a second source.')+
+   rtable('pp','Purchase price movement by supplier',['Supplier','Item','Qty bought','Avg rate','First rate','Latest rate','Change %'],priceRows,'Rising raw-material rates squeeze your margin. Compare suppliers for the same item here.')}
+ const rows={};for(const v of S.vendors)rows[v.name.toLowerCase()]={name:v.name,cat:v.service||'',n:0,amt:0,gst:0,last:'',months:{}};
+ for(const e of S.expenses.filter(e=>!e.cancelled&&e.kind!=='Other')){const nm=(e.payee||'').trim()||'(not named) '+e.category;const k=nm.toLowerCase();rows[k]=rows[k]||{name:nm,cat:'',n:0,amt:0,gst:0,last:'',months:{}};const r=rows[k];if(!r.cat)r.cat=e.category;if(e.date>r.last)r.last=e.date;if(!inP2(e.date))continue;r.n++;r.amt+=e.amount;r.gst+=e.gst;r.months[e.date.slice(0,7)]=1}
+ const list=Object.values(rows).sort((a,b)=>b.amt-a.amt);const tot=list.reduce((a,r)=>a+r.amt,0);
+ return top+rtable('pv','Vendor analysis (services & running costs)',['Vendor / paid to','Main category','Payments','Amount (before GST)','Share of expenses %','GST paid','Avg per payment','Months paid','Last paid'],list.map(r=>[r.name,r.cat,r.n,r2(r.amt),tot?r2(r.amt/tot*100):0,r2(r.gst),r.n?r2(r.amt/r.n):0,Object.keys(r.months).length,dmy(r.last)]),'Vendors are people you pay for services: transporters, electricity board, labour contractors, ad agencies, auditor. Pick the vendor when you add an expense so spending is grouped correctly.')};
+
+/* dashboard extras inspired by the daily retail dashboard: like-for-like timeframes, target pace, payment mix */
+function winStats(a,b){const ss=salesBetween(a,b);const rev=ss.reduce((x,s)=>x+s.taxable,0);const cost=ss.reduce((x,s)=>x+s.lines.reduce((y,l)=>y+l.qty*(l.cost??unitCostNow(l.itemId)),0),0);const tot=ss.reduce((x,s)=>x+s.total,0);return{tot,rev,n:ss.length,abv:ss.length?tot/ss.length:0,gm:rev?(rev-cost)/rev*100:null}}
+function timeframeTable(){const t=today(),d=new Date(t+'T00:00:00');const dow=(d.getDay()+6)%7;const m0=t.slice(0,8)+'01';const q0=(()=>{const m=d.getMonth();const qs=[3,6,9,0].map(x=>x);const sm=m>=9?9:m>=6?6:m>=3?3:0;return ymd(new Date(d.getFullYear(),sm,1))})();const f0=fyStart(t);
+ const ly=x=>addDays(x,-364),lyY=x=>(+x.slice(0,4)-1)+x.slice(4);const el=(a)=>daysBetween(a,t);
+ const W=[['Today',t,t,addDays(t,-1),addDays(t,-1),'yesterday',addDays(t,-7),addDays(t,-7),'same day last week'],
+  ['Week to date',addDays(t,-dow),t,addDays(t,-dow-7),addDays(t,-7),'last week',ly(addDays(t,-dow)),ly(t),'last year'],
+  ['Month to date',m0,t,(()=>{const p=new Date(d.getFullYear(),d.getMonth()-1,1);return ymd(p)})(),(()=>{const p=new Date(d.getFullYear(),d.getMonth()-1,1);p.setDate(p.getDate()+el(m0));return ymd(p)})(),'last month',lyY(m0),lyY(t),'last year'],
+  ['Quarter to date',q0,t,(()=>{const p=new Date(q0+'T00:00:00');p.setMonth(p.getMonth()-3);return ymd(p)})(),(()=>{const p=new Date(q0+'T00:00:00');p.setMonth(p.getMonth()-3);p.setDate(p.getDate()+el(q0));return ymd(p)})(),'last quarter',lyY(q0),lyY(t),'last year'],
+  ['Financial year to date',f0,t,null,null,'',lyY(f0),lyY(t),'last year']];
+ return `<table><tr><th>Period</th><th class="n">Sales</th><th class="n">vs previous</th><th class="n">vs comparison</th><th class="n">Invoices</th><th class="n">Avg invoice</th><th class="n">Gross margin</th></tr>${W.map(w=>{const c=winStats(w[1],w[2]);const p=w[3]?winStats(w[3],w[4]):null;const l=winStats(w[6],w[7]);
+  return `<tr><td style="white-space:nowrap">${w[0]}<div class="mut" style="font-size:11.5px">${dmy(w[1])}${w[1]!==w[2]?' to '+dmy(w[2]):''}</div></td><td class="n"><b>${inrS(c.tot)}</b></td><td class="n">${p?chg(c.tot,p.tot)+`<div class="mut" style="font-size:11px">${w[5]}</div>`:'—'}</td><td class="n">${chg(c.tot,l.tot)}<div class="mut" style="font-size:11px">${w[8]}</div></td><td class="n">${c.n}</td><td class="n">${inrS(c.abv)}</td><td class="n">${c.gm==null?'—':c.gm.toFixed(1)+'%'}</td></tr>`}).join('')}</table><div class="mut" style="font-size:12px">Comparisons are like-for-like: the same number of days into the previous period.</div>`}
+function targetBox(){const tg=+S.settings.monthTarget;if(!tg)return `<div class="mut">Set a monthly sales target in Settings to track progress here.</div>`;const t=today(),m0=t.slice(0,8)+'01';const d=new Date(t+'T00:00:00');const dim=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();const day=d.getDate();
+ const act=winStats(m0,t).tot,pct=act/tg*100,pace=day/dim*100,left=dim-day;const need=left>0?Math.max(0,(tg-act)/left):0;
+ return `<div class="row"><b style="font-size:20px">${inrS(act)}</b><span class="mut">of ${inrS(tg)} target · ${pct.toFixed(0)}% achieved · ${pace.toFixed(0)}% of month gone</span></div>
+ <div style="position:relative;height:14px;background:#f3e3cf;border-radius:7px;margin:8px 0;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100,pct)}%;background:${pct>=pace?'var(--grn)':'var(--amb)'}"></i><span style="position:absolute;top:-2px;bottom:-2px;left:${pace}%;border-left:2px dashed #2b2118"></span></div>
+ <div class="${pct>=pace?'up':'dn'}">${act>=tg?'Target met. 🎉':pct>=pace?'Ahead of pace.':'Behind pace.'} ${act<tg&&left>0?`Need ${inrS(need)} per day for the remaining ${left} days.`:''}</div>`}
+function donut(parts){const tot=parts.reduce((a,p)=>a+p[1],0);if(!tot)return '<div class="mut">No payments yet.</div>';const cols=['#c8741a','#1e8449','#2e86c1','#8e44ad','#d68910','#7f8c8d','#c0392b'];let off=0;const R=50,C=2*Math.PI*R;
+ return `<div class="row" style="align-items:center"><svg viewBox="0 0 140 140" width="140">${parts.map((p,i)=>{const len=p[1]/tot*C;const s=`<circle cx="70" cy="70" r="${R}" fill="none" stroke="${cols[i%7]}" stroke-width="22" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"><title>${esc(p[0])}: ${inrS(p[1])}</title></circle>`;off+=len;return s}).join('')}<text x="70" y="75" text-anchor="middle" font-size="13" font-weight="700">${inrS(tot)}</text></svg>
+ <div>${parts.map((p,i)=>`<div><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cols[i%7]}"></span> ${esc(p[0])}: <b>${inrS(p[1])}</b> <span class="mut">${(p[1]/tot*100).toFixed(0)}%</span></div>`).join('')}</div></div>`}
+function payMix(a,b){const m={};for(const r of liveRcp().filter(r=>r.date>=a&&r.date<=b))m[r.mode]=(m[r.mode]||0)+r.amount;return Object.entries(m).sort((x,y)=>y[1]-x[1])}
+function trendSpikes(){const t=today();const q3=itemQtySold(addDays(t,-2),t),q30=itemQtySold(addDays(t,-32),addDays(t,-3));const out={};for(const id in q3){const a3=q3[id]/3,a30=(q30[id]||0)/30;if(q3[id]>=6&&a30>0&&a3>=1.5*a30)out[id]=r2(a3/a30)}return out}
+function belowCost(){const t=today(),out=[];for(const s of salesBetween(addDays(t,-6),t))for(const l of s.lines){const net=l.qty?l.taxable/l.qty:0;const c=l.cost??unitCostNow(l.itemId);if(c&&net<c)out.push({s,l,net,c})}return out}
+
+/* ================= SAMPLE DATA ================= */
+function loadSample(){if((S.sales.length||S.purchases.length)&&!confirm('Sample data will REPLACE all current data. Continue?'))return;
+ let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;const t=today(),ago=n=>addDays(t,-n);
+ S=blank();Object.assign(S.settings,{name:'Sample Ginger Candy Co.',address:'12 Market Road, Sample Town 600001',gstin:'33AABCS1234F1Z'+gstinCheck('33AABCS1234F1Z'),state:'33',phone:'98400 00000',email:'sales@example.com',bank:'Sample Bank · A/c 000123456789 · IFSC SBIN0000001 · UPI sample@upi',fssai:'12345678901234'});
+ const I=(name,type,unit,gst,hsn,price,cost,reorder,shelfDays,sku)=>{const x={id:uid(),name,type,unit,gst,hsn,price,cost,reorder,shelfDays,sku};S.items.push(x);return x};
+ const p100=I('Ginger Candy 100 g pouch','Finished','PCS',5,'1704',40,22,150,270,'GC100'),j250=I('Ginger Candy 250 g jar','Finished','PCS',5,'1704',95,55,60,270,'GC250'),bulk=I('Ginger Candy 1 kg bulk','Finished','KGS',5,'1704',320,190,20,180,'GC1K'),loz=I('Ginger Lozenges strip','Finished','PCS',5,'1704',10,5,300,365,'GLZ');
+ const ging=I('Dry ginger','Raw material','KGS',5,'0910',0,180,50,365),jag=I('Jaggery','Raw material','KGS',5,'1701',0,55,100,180),sug=I('Sugar','Raw material','KGS',5,'1701',0,42,100,365),pouch=I('Printed pouch 100 g','Packing','PCS',18,'3923',0,1.2,1000,0),jar=I('PET jar 250 g','Packing','PCS',18,'3923',0,6,200,0);
+ const C=(name,gstin,state,phone)=>{const x={id:uid(),name,gstin:gstin?gstin+gstinCheck(gstin):'',state,phone,address:'',email:''};S.customers.push(x);return x};
+ const c1=C('Annapoorna Stores','33AAFCA1111B1Z','33','94440 11111'),c2=C('Kerala Spice Mart','32AAGCK2222C1Z','32','94470 22222'),c3=C('Health Basket','33AAHCH3333D1Z','33','94450 33333'),c4=C('Bengaluru Organics','29AAICB4444E1Z','29','98450 44444'),c5=C('Mrs. Lakshmi (retail)','','33','');
+ const Sp=(name,gstin,state)=>{const x={id:uid(),name,gstin:gstin+gstinCheck(gstin),state,phone:'',address:'',email:''};S.suppliers.push(x);return x};
+ const s1=Sp('Cochin Ginger Traders','32AAJCC5555F1Z','32'),s2=Sp('Erode Jaggery House','33AAKCE6666G1Z','33'),s3=Sp('PolyPack Industries','33AALCP7777H1Z','33'),s4=Sp('Lozenge Works','27AAMCL8888J1Z','27');
+ postPurchase({date:ago(58),supplierId:s1.id,supInvNo:'CGT/882',supInvDate:ago(58),lines:[{itemId:ging.id,batchNo:'DG-0925',mfg:ago(70),exp:addDays(t,250),qty:120,rate:180,gst:5}]});
+ postPurchase({date:ago(57),supplierId:s2.id,supInvNo:'EJH-1201',supInvDate:ago(57),lines:[{itemId:jag.id,batchNo:'JG-11',mfg:ago(60),exp:addDays(t,110),qty:400,rate:55,gst:5},{itemId:sug.id,batchNo:'SG-11',mfg:ago(60),exp:addDays(t,300),qty:200,rate:42,gst:5}]});
+ postPurchase({date:ago(56),supplierId:s3.id,supInvNo:'PP/3345',supInvDate:ago(56),lines:[{itemId:pouch.id,batchNo:'PO-01',qty:6000,rate:1.2,gst:18},{itemId:jar.id,batchNo:'JR-01',qty:900,rate:6,gst:18}]});
+ postPurchase({date:ago(50),supplierId:s4.id,supInvNo:'LW-77',supInvDate:ago(50),lines:[{itemId:loz.id,batchNo:'LZ-A1',mfg:ago(52),exp:addDays(t,200),qty:3000,rate:5,gst:5}]});
+ postAdjust({date:ago(59),itemId:loz.id,batchSel:'new',batchNo:'LZ-OLD',mfg:ago(400),exp:ago(12),qty:60,reason:'Opening stock'});
+ postProduction({date:ago(55),itemId:p100.id,qty:2500,batchNo:'GC100-01',inputs:[{itemId:ging.id,qty:45},{itemId:jag.id,qty:160},{itemId:sug.id,qty:40},{itemId:pouch.id,qty:2500}]});
+ postProduction({date:ago(54),itemId:j250.id,qty:700,batchNo:'GC250-01',inputs:[{itemId:ging.id,qty:30},{itemId:jag.id,qty:110},{itemId:jar.id,qty:700}]});
+ postProduction({date:ago(53),itemId:bulk.id,qty:60,batchNo:'GC1K-01',inputs:[{itemId:ging.id,qty:12},{itemId:jag.id,qty:40}]});
+ postProduction({date:ago(20),itemId:p100.id,qty:1500,batchNo:'GC100-02',inputs:[{itemId:ging.id,qty:27},{itemId:jag.id,qty:70},{itemId:sug.id,qty:25},{itemId:pouch.id,qty:1500}]});
+ const custs=[c1,c2,c3,c4,c5,null,null];
+ for(let d=45;d>=0;d--){const n=1+Math.floor(rnd()*3);for(let k=0;k<n;k++){const c=custs[Math.floor(rnd()*custs.length)];const lines=[];
+   const pick=[[p100,20+Math.floor(rnd()*(d<15?80:50))],[j250,5+Math.floor(rnd()*15)],[loz,30+Math.floor(rnd()*60)],[bulk,1+Math.floor(rnd()*3)]];
+   for(const [it,q] of pick)if(rnd()<(it===bulk?0.3:0.6))lines.push({itemId:it.id,batchSel:'auto',qty:c?q:Math.ceil(q/10),rate:it.price,disc:c&&c.gstin?5:0,gst:5});
+   if(!lines.length)lines.push({itemId:p100.id,batchSel:'auto',qty:10,rate:40,disc:0,gst:5});
+   postSale({date:ago(d),customerId:c?c.id:'',walkinName:c?'':'Counter sale',pos:c?c.state:'33',payMode:c&&c.gstin?'Credit (to be paid)':'Cash',lines})}}
+ const big=postSale({date:ago(3),customerId:c4.id,pos:'29',payMode:'NEFT/RTGS/IMPS',lines:[{itemId:bulk.id,batchSel:'auto',qty:40,rate:300,disc:0,gst:5}]});
+ const o1=postOrder({date:ago(6),due:ago(1),customerId:c2.id,lines:[{itemId:p100.id,qty:600,rate:38},{itemId:j250.id,qty:250,rate:90}]});
+ postSale({date:ago(2),customerId:c2.id,pos:'32',orderId:o1.id,payMode:'Credit (to be paid)',lines:[{itemId:p100.id,batchSel:'auto',qty:300,rate:38,disc:0,gst:5}]});
+ postOrder({date:ago(1),due:addDays(t,6),customerId:c1.id,lines:[{itemId:bulk.id,qty:25,rate:310},{itemId:loz.id,qty:1000,rate:9}]});
+ const inv=S.sales.filter(s=>s.customerId===c3.id).slice(-1)[0];if(inv)postSalesReturn({invoiceId:inv.id,date:ago(1),reason:'Damaged',restock:false,lines:[{idx:0,qty:Math.min(5,inv.lines[0].qty)}]});
+ const pj=S.purchases[1];postPurchaseReturn({purchaseId:pj.id,date:ago(40),reason:'Quality issue',lines:[{idx:0,qty:20}]});
+ for(const [n,sv] of [['Local transport','Transportation / freight'],['TNEB','Electricity'],['Indane','Fuel / gas / firewood for cooking'],['CA firm','Auditor / accountant fees'],['Building owner','Rent'],['Insta Ads Agency','Advertising & marketing']])S.vendors.push({id:uid(),name:n,service:sv,state:'33',gstin:'',phone:'',email:'',address:''});S.settings.monthTarget=250000;
+ const E=(d,cat,amt,extra)=>postExpense({date:ago(d),kind:kindOfCat(cat),category:cat,amount:amt,mode:'UPI',...(extra||{})});
+ for(const m of [80,50,20]){E(m,'Rent',12000,{payee:'Building owner',mode:'NEFT/RTGS/IMPS'});E(m-1,'Electricity',4200+Math.round(rnd()*900),{payee:'TNEB'});E(m-2,'Employee salaries',18000,{mode:'NEFT/RTGS/IMPS'});E(m-3,'Telephone & internet',799);E(m-4,'Inventory storage / warehouse',3000)}
+ for(let d=45;d>=0;d-=7){E(d,'Labour charges (daily / piece rate)',3500+Math.round(rnd()*1500),{mode:'Cash'});E(d,'Transportation / freight',900+Math.round(rnd()*900),{payee:'Local transport'});E(d,'Fuel / gas / firewood for cooking',1100,{payee:'Indane'})}
+ E(40,'Labels & stickers',3200,{payee:'Sri Print Labels',gst:576,gstin:'33AAPCS4545M1Z'+gstinCheck('33AAPCS4545M1Z')});E(38,'Packing material (cartons, tape, shrink wrap)',2400,{payee:'Box Mart'});E(18,'Courier / parcel charges',1350,{payee:'DTDC'});E(12,'Loading / unloading (hamali)',600,{mode:'Cash'});E(10,'Online marketplace fees (Amazon, Flipkart etc.)',1850,{payee:'Amazon Seller Services'});E(15,'Dryer / machine service charges (AMC)',2800,{payee:'Dryer service technician'});E(8,'Lab testing / quality checks',2500,{payee:'Food Testing Lab'});
+ E(35,'Advertising & marketing',6000,{desc:'Instagram ads + flyers',payee:'Insta Ads Agency'});E(25,'Auditor / accountant fees',15000,{gst:2700,gstin:'33AANCA9999K1Z'+gstinCheck('33AANCA9999K1Z'),payee:'CA firm',mode:'NEFT/RTGS/IMPS'});
+ E(60,'Machinery & equipment',85000,{life:8,desc:'Candy cutting machine',gst:15300,gstin:'33AAOCM1212L1Z'+gstinCheck('33AAOCM1212L1Z'),mode:'NEFT/RTGS/IMPS'});E(30,'Supplier payment (for purchases)',25000,{payee:'Cochin Ginger Traders',mode:'NEFT/RTGS/IMPS'});
+ for(const s of S.sales.filter(s=>/^Credit/.test(s.payMode)&&s.date<ago(15)))if(rnd()<0.7)postReceipt({date:addDays(s.date,7),customerId:s.customerId,mode:rnd()<0.5?'UPI':'Cheque',ref:'TXN'+Math.floor(rnd()*1e6),amount:s.total,allocs:[{saleId:s.id,amt:s.total}]});
+ S.receipts.filter(r=>r.status==='Awaiting clearance'&&r.date<ago(10)).forEach(r=>r.status='Received');
+ S.lastBackup=new Date().toISOString();commit('Sample data loaded. Explore every page, then Erase all before real use.');go('dash')}
+
+/* ================= START ================= */
+window.addEventListener('error',e=>toast('Error: '+e.message,6000));
+(async function start(){let raw=null;try{raw=await idbGet('state')}catch(e){}if(!raw)raw=localStorage.getItem(DBNAME);S=raw?Object.assign(blank(),JSON.parse(raw)):blank();
+ try{FH=await idbGet('fh')||null;if(FH&&(await FH.queryPermission({mode:'readwrite'}))!=='granted')AUTO_NEEDS=true}catch(e){FH=null}
+ if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+ if(!S.settings.name&&!S.items.length)PAGE='settings';render();
+ setInterval(()=>{if(PAGE==='dash'&&!D)render()},60000);
+ window.addEventListener('storage',()=>{});})();
+</script>
+</body>
+</html>
