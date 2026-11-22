@@ -1,5 +1,8 @@
 # GingerBooks
 
+## Install on a laptop
+Download [`download/GingerCan.zip`](download/GingerCan.zip) (on GitHub, open the file and click **Download raw file**). Right-click the zip, choose **Extract All**, and enter `C:\` as the destination. Then open `C:\GingerCan\START HERE.txt` and double-click `GingerBooks.html` in Chrome or Edge.
+
 Offline operations app for a small ginger candy manufacturer. It is a single HTML file: no installation, no server and no internet connection needed. Open `GingerBooks.html` in Chrome or Edge.
 
 ## Features
