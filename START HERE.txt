@@ -1,0 +1,14 @@
+GINGERBOOKS - START HERE
+========================
+1. Double-click  GingerBooks.html  (opens in Chrome or Edge, no internet needed).
+2. Read  Guide\Owner-Guide.html  for step-by-step instructions.
+3. IMPORTANT: In the app, go to Settings & backup > "Choose auto-backup file"
+   and save it inside the  Backups  folder. Your data is stored in the browser,
+   so this backup file is your safety copy.
+
+Folders
+  Backups          - auto-backup and downloaded backup files (.json)
+  Bank statements  - statements downloaded from net banking (.xlsx / .csv)
+  Invoices         - invoice / credit note PDFs (Print > Save as PDF)
+  Reports          - GST reports, P&L and other Excel (CSV) downloads
+  Guide            - owner guide
