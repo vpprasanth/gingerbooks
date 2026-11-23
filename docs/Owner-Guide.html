@@ -61,7 +61,7 @@
 <tr><td>Goods arrive from a supplier</td><td><b>Purchases → + New purchase.</b> Enter the supplier bill number, batch, expiry, quantity and rate.</td></tr>
 <tr><td>You cook / pack a batch</td><td><b>Production → + Record production.</b> Enter the quantity made and the materials used. The new batch gets an expiry date automatically, and its cost is worked out from the materials.</td></tr>
 <tr><td>Money comes in later (UPI, cheque, DD, cash, NEFT)</td><td><b>Payments &amp; dues → + Record payment.</b> The amount is adjusted against the oldest unpaid invoices. Cheques and DDs stay <i>Awaiting clearance</i> until the bank statement shows them, or until you click <i>Cleared</i> / <i>Bounced</i>.</td></tr>
-<tr><td>You pay an expense</td><td><b>Expenses → + Add expense.</b> Choose the type: <b>OpEx</b> for running costs, <b>CapEx</b> for machines and assets, or <b>Not a cost</b> for supplier payments, GST paid and loans. Then choose the category and the vendor. Use <i>Repeat</i> to copy last month's rent or salary entry.</td></tr>
+<tr><td>You pay an expense</td><td><b>Expenses → + Add expense.</b> Choose the type: <b>OpEx</b> for running costs, <b>CapEx</b> for machines and assets, or <b>Not a cost</b> for supplier payments, GST paid and loans. Then choose the category and the vendor. Use <i>Repeat</i> to copy last month's rent entry, or <i>Repeat every month until</i> to fill many months at once. Salaries are best paid through the <b>Payroll</b> page.</td></tr>
 <tr><td>A customer returns goods</td><td><b>Returns → Customer return.</b> This makes a credit note. Untick “put back into stock” if the goods are damaged.</td></tr>
 <tr><td>You return goods to a supplier</td><td><b>Returns → Return to supplier.</b> This makes a debit note.</td></tr></table>
 
@@ -89,24 +89,17 @@
 <p>You can type your own category name if none of these fit. Mark each expense <b>Fixed</b> (same every month, e.g. rent and salaries) or <b>Variable</b> (rises with sales, e.g. labels and transport). The break-even figure depends on this split.</p>
 <div class="box">Labels, pouches and jars that you buy in bulk and want to count are better added as <b>Packing</b> products and bought through Purchases. The app then deducts them in Production and includes them in product cost.</div>
 
+<h2>5a. Payroll, past records and the change log</h2>
+<p><b>Salary history.</b> In <b>Workers → Edit</b>, fill in the date of joining (and leaving, if any) and the <b>Pay history</b>: one line for each time the pay changed, with the date it started. For example: from 01-03-2020 ₹12,000 per month, then from 01-04-2024 ₹14,000 per month. If you just change the wage in the form later, the app asks from which date the new pay applies and adds the line for you.</p>
+<p><b>Payroll page, month by month.</b> The app works out each worker's pay for the month:</p>
+<ul><li><b>Monthly staff</b>: the salary in force on each day, for the days they were on the rolls. A worker who joined on the 16th gets about half a month.</li>
+<li><b>Daily workers</b>: the amounts ticked for them in each production run that month. Days worked outside a run can be added with <i>Adjust</i>.</li>
+<li><i>Adjust</i> also adds incentive, bonus or a deduction (advance recovered, loss of pay), each with a note.</li></ul>
+<p>Press <b>Paid</b> for one worker, or <b>Mark all as paid</b> for the month. The pay is then added to Expenses (Employee salaries or Labour charges). Wages already booked from a production run are not added a second time. If the month also has salary expenses typed in by hand, a yellow warning appears so the same pay is not counted twice.</p>
+<p><b>Past years.</b> Press <b>Fill in past salaries</b> and choose the months, for example from April 2020 to last month. This makes <i>draft</i> pay entries for every worker from their joining date. For daily workers in months with no production records, it uses the number of days you give (26 by default). Check the drafts in <b>Year summary</b> and adjust any month. Then press <b>Mark all drafts as paid</b>. Nothing reaches Expenses until you do.</p>
+<p><b>Other past costs.</b> When you add an expense such as rent, fill in <i>Repeat every month until</i>. The app then enters it for every month up to that month, for example rent from January 2020 to March 2026.</p>
+<p><b>Correcting entries.</b> Expenses, payments received (date, mode, reference, notes), production notes and paid payroll months can be edited. Each edit asks for a reason. Invoices, purchases and stock are still corrected by cancelling and entering again, because GST returns depend on them. Cancelling anything also asks for a reason.</p>
+<p><b>Change log.</b> Every edit, cancellation, salary payment, past-salary run and back-dated entry is listed with who did it, when, what changed (old → new) and the reason. Entries in the log cannot be changed or deleted. Guests (auditors) can see and download it. Payroll is visible to Admins and guests, not to Staff users.</p>
 <h2>6. Bank statement</h2>
 <ol><li>In net banking, download the statement as <b>Excel (.xlsx)</b> or <b>CSV</b>. Save it in <code>C:\GingerCan\Bank statements</code>. If the bank gives an old <b>.xls</b> file, open it in Excel and use <i>Save As → Excel Workbook (.xlsx)</i>.</li>
-<li>Bank statement → <i>Import statement</i>. Check that the columns are mapped correctly, then click <i>Import</i>.</li>
-<li>Money in is matched to the UPI, cheque and NEFT payments you recorded. Where there is no match, the app suggests an invoice of the same amount, or a customer whose name appears in the narration.</li>
-<li>For money out, click <i>Save as expense</i>. The category is guessed from the narration (TNEB → Electricity, DTDC → Courier, and so on).</li></ol>
-<p>Linking directly to the bank account is not possible in a free tool. In India that requires RBI's licensed Account Aggregator network. Importing the statement takes about a minute a week. Importing the same file twice is safe because duplicates are skipped.</p>
-
-<h2>7. Reading the reports</h2>
-<ul><li><b>Dashboard:</b> today's and this month's sales; a period table (today, week, month, quarter, year) with like-for-like comparisons; target progress; payment mix; trend chart; fast movers with 🔥 spikes; top suppliers and customers; returns.</li>
-<li><b>Alerts:</b> negative stock, empty (zero) batches, expired and expiring stock, low stock, items sold below cost, dead stock, overdue payments, cheques not cleared, overdue orders, backup due.</li>
-<li><b>Demand vs supply:</b> pending orders against good stock, and how much to make or buy now.</li>
-<li><b>GST &amp; reports:</b> pick the month. You get GSTR-1 tables (B2B, B2C large and small, credit notes, HSN summary, documents issued) and a GSTR-3B summary (output tax, input credit, cash payable). There are also sales, purchase and returns registers and stock/expiry reports. Every table has an <b>Excel (CSV)</b> button. Give these to your accountant; they are working summaries, so check them against the GST portal before filing.</li>
-<li><b>Profit &amp; break-even:</b> a profit &amp; loss statement; the break-even sales per month and your margin of safety; contribution by product; and a what-if calculator (price, cost per unit, fixed cost) with a chart.</li>
-<li><b>Party analysis:</b> customers grouped by activity (Active, Slowing, At risk, Lost), share of sales, margin, returns, dues; suppliers by share, return %, and raw-material price movement; vendors by spending.</li></ul>
-
-<h2>8. Rules the app follows</h2>
-<ul><li>Invoice numbers run per financial year, for example INV/2026-27/0001. A saved invoice cannot be edited. Cancel it and make a new one. The cancelled number is still reported in GSTR-1 “documents issued”, as GST rules require.</li>
-<li>If you bill more than you have in stock, the app warns you but lets you save. The item then shows in Alerts as negative stock until you enter the missing purchase or production.</li>
-<li>Expired batches are never picked automatically for sale.</li></ul>
-<p style="color:#5b6e64;font-size:13px">GingerBooks · works offline in Chrome or Edge · data stays on this computer.</p>
-</body></html>
+<li>Bank statement → <i>Import statement</i>. Check that the columns are mapped correctly, then cli
