@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GingerBooks – Owner guide</title>
-<style>body{font:16px/1.6 "Segoe UI",system-ui,sans-serif;max-width:860px;margin:30px auto;padding:0 20px;color:#2b2118;background:#faf7f2}h1{color:#8a4b0c}h2{border-bottom:2px solid #e8e0d4;padding-bottom:4px;margin-top:34px}.box{background:#fff;border:1px solid #e8e0d4;border-radius:10px;padding:12px 18px;margin:12px 0}.warn{background:#fdebd0;border-color:#f5cba7}code{background:#f3e9dc;padding:1px 5px;border-radius:4px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #e8e0d4;padding:6px 8px;text-align:left;vertical-align:top}th{background:#fbf3e8}</style></head><body>
+<style>body{font:16px/1.6 "Segoe UI",system-ui,sans-serif;max-width:860px;margin:30px auto;padding:0 20px;color:#1b2b25;background:#f4f8ef}h1{color:#0f766e}h2{border-bottom:2px solid #dce8dd;padding-bottom:4px;margin-top:34px}.box{background:#fff;border:1px solid #dce8dd;border-radius:10px;padding:12px 18px;margin:12px 0}.warn{background:#fdebd0;border-color:#f5cba7}code{background:#eef6e8;padding:1px 5px;border-radius:4px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #dce8dd;padding:6px 8px;text-align:left;vertical-align:top}th{background:#eef6e8}</style></head><body>
 <h1>🫚 GingerBooks: owner guide</h1>
 <p>GingerBooks runs your ginger candy business: billing, stock, production, payments, expenses, GST reports and profit. It is a single file and needs no installation or internet connection. It costs nothing to run.</p>
 
@@ -28,6 +28,15 @@
 <p><b>First sign-in:</b> sign in first on the device that already has your entries (the laptop). Its books go to the cloud. The other devices then download them.</p>
 <p>If two devices changed the books at the same time, the app asks which copy to keep. It saves a backup file of this device's copy before it uses the cloud copy, so nothing is lost. Keep the auto-backup file switched on as well.</p>
 
+<h3>Users and login</h3>
+<p>Settings &amp; backup → <b>Users and login</b>. Create the administrator first (user name and password). The administrator then adds each user with a user name, name, email and role:</p>
+<ul><li><b>Administrator</b> can do everything, including managing users.</li><li><b>Staff</b> can do everything except open Settings &amp; backup.</li></ul>
+<p>Adding a user, or clicking <b>Reset password</b>, makes a temporary password. It is shown once, with an <b>✉ Email</b> button that opens your mail app with the user name, password and website link ready to send. When the user logs in, they must choose their own password. Anyone can change their user name and password later under <b>👤 My account</b>; the administrator can also rename any user in the Users table at the top of the menu. If someone forgets theirs, the administrator resets it. Disable or delete users who leave.</p>
+<p>Each laptop or phone asks once and then opens straight away until someone clicks <b>Log out</b>. Untick <i>Remember this device</i> on a shared computer. On the website version you can also turn on fingerprint / face unlock. If the administrator forgets their password, click <i>Administrator: unlock with cloud account</i> on the login screen.</p>
+
+<h3>Attachments</h3>
+<p>Every invoice, purchase, order, payment, expense, return, production run, product, customer, supplier, vendor and worker has a <b>📎</b> button. Use it to attach bills, cheque / DD scans, delivery notes, PDFs and emails (save the email as .eml or PDF, or paste its text as a note), or to take a photo with the phone. Photos are shrunk automatically and each file can be up to 10 MB. With cloud sync on, files are kept in the cloud, so the phone and laptop both see them. Without sync they stay on that device only and are not in the backup file.</p>
+
 <h2>3. First-time setup (in this order)</h2>
 <ol>
 <li><b>Try it first (optional):</b> Settings → <i>Load sample data</i> and click through every page. Then click <i>Erase all data</i> (type ERASE) before you enter real data.</li>
@@ -51,16 +60,28 @@
 <tr><td>A customer returns goods</td><td><b>Returns → Customer return.</b> This makes a credit note. Untick “put back into stock” if the goods are damaged.</td></tr>
 <tr><td>You return goods to a supplier</td><td><b>Returns → Return to supplier.</b> This makes a debit note.</td></tr></table>
 
-<h2>5. Expense categories included</h2>
-<p><b>Packing &amp; labelling:</b> labels &amp; stickers, printing, packing material (cartons, tape, shrink wrap), pouches/jars not tracked in stock, barcode/batch coding, packing labour.<br>
-<b>Production:</b> fuel/gas/firewood, electricity, water, labour (daily/piece rate), consumables (gloves, caps, cleaning), small ingredients, lab testing, <b>dryer / machine service charges (AMC)</b>, machine repairs.<br>
-<b>Selling &amp; delivery:</b> transport/freight, courier, loading/unloading (hamali), commission/distributor margin, online marketplace fees, payment gateway charges, free samples, damaged goods.<br>
-<b>Marketing:</b> advertising, social media ads, flex/banners, exhibitions, website.<br>
-<b>Staff:</b> <b>employee salaries</b>, staff welfare, PF/ESI, bonus.<br>
-<b>Premises:</b> rent, storage/warehouse, security, cleaning &amp; pest control, building repairs.<br>
-<b>Admin &amp; compliance:</b> auditor/accountant fees, legal fees, FSSAI and trade licences, trademark, software, insurance, bank charges, loan interest, GST late fees, phone/internet, stationery, travel.<br>
-<b>CapEx (assets):</b> machinery, dryer/dehydrator, cooking vessels &amp; stoves, sealing machine, weighing scales, label printer, printing cylinders, building, vehicle, furniture, computer.<br>
-You can type your own category name if none of these fit. Mark each expense <b>Fixed</b> (same every month, e.g. rent and salaries) or <b>Variable</b> (rises with sales, e.g. labels and transport). The break-even figure depends on this split.</p>
+<h2>5. Cost heads and expense categories</h2>
+<p>Every expense category belongs to one cost head. <b>Profit &amp; break-even → Total cost per unit</b> adds them up and divides by the quantity made in production runs.</p>
+<p><b>Procurement:</b> raw ginger (if not bought through Purchases), freight for raw material, loading, mandi commission, sorting and grading.<br>
+<b>Processing:</b> washing and cleaning, peeling/grating job work, fuel/gas/firewood, baking/cooking charges, drying charges, electricity, water, consumables, <b>dryer / machine service charges (AMC)</b>, machine repairs.<br>
+<b>Labour:</b> daily/piece-rate labour, packing labour, <b>employee salaries</b>, staff welfare, PF/ESI, bonus.<br>
+<b>Ingredients:</b> lemon/lime, salt, sugar/jaggery, honey, spices and flavours.<br>
+<b>Packaging:</b> labels &amp; stickers, printing, bottles/jars/caps, pouches, bottling/filling charges, cartons and tape, barcode/batch coding.<br>
+<b>Advertising &amp; marketing:</b> ads, social media, banners, exhibitions, website, free samples.<br>
+<b>Travel:</b> travel &amp; conveyance, vehicle fuel, vehicle maintenance, food and stay on trips.<br>
+<b>Distribution &amp; delivery:</b> freight to customers, courier, hamali, distributor commission, marketplace fees.<br>
+<b>Financial &amp; audit:</b> auditor/accountant, legal fees, bank charges, payment gateway charges, loan interest, insurance, GST late fees, software.<br>
+<b>Premises &amp; office:</b> rent, storage/warehouse, security, cleaning &amp; pest control, building repairs, phone/internet, stationery.<br>
+<b>Compliance &amp; quality:</b> FSSAI and trade licences, lab testing, trademark.<br>
+<b>Wastage &amp; losses:</b> process wastage, damaged goods. Stock written off in Stock is added automatically.<br>
+<b>Miscellaneous:</b> anything else.<br>
+<b>Depreciation:</b> worked out automatically from CapEx (machinery, dryer, vessels, sealing machine, scales, vehicle, building).</p>
+<p><b>Recording a production run:</b> enter the materials and quantities used, tick the workers who worked on the run (only workers on the rolls that day are listed; their wage is filled in and can be changed), then enter electricity units, fuel and any other cost. The app shows the <b>lot cost</b> and the <b>cost per unit</b> before you save. Leave <i>Also record daily wages, fuel and other costs as cash expenses</i> ticked so they appear in Expenses and Profit. Monthly-salaried staff are costed at salary ÷ 26 per run, and their salary stays a monthly expense. The monthly electricity bill is still entered under Expenses.</p>
+<p><b>Workers</b> (menu → Workers) is the labour register: name, gender, date of birth (age is worked out), phone, work, pay per day / month / piece, incentive, joining and leaving dates, pay-to account, emergency contact and remarks.</p>
+<p><b>Daily production cost</b> (Production page, and the last 7 days on the Dashboard): for each day it shows what was made, the materials used, that day's direct making costs (labour, fuel, washing, drying…), a fair share of the month's fixed making costs (salaries, electricity, machine AMC, depreciation), the cost per unit and the day's average selling price. Click a date to see the full breakdown by cost head. Enter daily wages and fuel on the day they are paid, marked <b>Variable</b>, so each day's cost is right.</p>
+<p>Every number and box on the Dashboard is clickable, and each section has a <b>Details ›</b> link to the full page.</p>
+<div class="box">Ginger, lemon, salt, sugar, bottles and labels bought in bulk are best added as products (type Raw material or Packing) and bought through Purchases. Production then deducts them, and their cost lands under the right head. In Products you can set each item's <b>Cost head</b>; by default anything named ginger goes to Procurement, other raw materials to Ingredients and packing items to Packaging.</div>
+<p>You can type your own category name if none of these fit. Mark each expense <b>Fixed</b> (same every month, e.g. rent and salaries) or <b>Variable</b> (rises with sales, e.g. labels and transport). The break-even figure depends on this split.</p>
 <div class="box">Labels, pouches and jars that you buy in bulk and want to count are better added as <b>Packing</b> products and bought through Purchases. The app then deducts them in Production and includes them in product cost.</div>
 
 <h2>6. Bank statement</h2>
@@ -82,5 +103,5 @@ You can type your own category name if none of these fit. Mark each expense <b>F
 <ul><li>Invoice numbers run per financial year, for example INV/2026-27/0001. A saved invoice cannot be edited. Cancel it and make a new one. The cancelled number is still reported in GSTR-1 “documents issued”, as GST rules require.</li>
 <li>If you bill more than you have in stock, the app warns you but lets you save. The item then shows in Alerts as negative stock until you enter the missing purchase or production.</li>
 <li>Expired batches are never picked automatically for sale.</li></ul>
-<p style="color:#7a6a5a;font-size:13px">GingerBooks · works offline in Chrome or Edge · data stays on this computer.</p>
+<p style="color:#5b6e64;font-size:13px">GingerBooks · works offline in Chrome or Edge · data stays on this computer.</p>
 </body></html>
