@@ -56,7 +56,7 @@ begin
   select b.data into d from public.books b where b.user_id = g.owner;
   if d is null then return; end if;
   if g.fy_from is not null then
-    foreach k in array array['sales','purchases','salesReturns','purchaseReturns','orders','production','adjustments','receipts','expenses','bankTxns'] loop
+    foreach k in array array['sales','purchases','salesReturns','purchaseReturns','orders','production','adjustments','receipts','expenses','bankTxns','payroll','audit'] loop
       if d ? k then
         d := jsonb_set(d, array[k], coalesce((select jsonb_agg(e) from jsonb_array_elements(d->k) e where (e->>'date') >= g.fy_from::text and (e->>'date') <= coalesce(g.fy_to, '9999-12-31'::date)::text), '[]'::jsonb));
       end if;
