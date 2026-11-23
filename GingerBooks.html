@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GingerBooks</title><meta name="theme-color" content="#0f766e">
+<title>GingerBooks</title><meta name="theme-color" content="#0b3b37"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="GingerBooks"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 :root{--g:#0f766e;--gd:#115e59;--bg:#f4f8ef;--card:#fff;--line:#dce8dd;--txt:#1b2b25;--mut:#5b6e64;--red:#c0392b;--amb:#b7791f;--grn:#3d8b1f;--y:#f2c230;--leaf:#7cb342;--soft:#eef6e8}
 *{box-sizing:border-box}
@@ -51,7 +51,7 @@ label{display:block;font-size:13px;color:var(--mut);margin-bottom:3px}
 .tabs a.on{background:var(--g);color:#fff;border-color:var(--g)}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .sp{flex:1}
-#toast{position:fixed;bottom:20px;right:20px;background:#0b3b37;color:#fff;padding:10px 16px;border-radius:8px;display:none;z-index:9;max-width:420px}
+#toast{position:fixed;bottom:20px;right:20px;background:#0b3b37;color:#fff;padding:10px 16px;border-radius:8px;display:none;z-index:10;max-width:420px}
 .banner{background:#fdebd0;border:1px solid #f5cba7;padding:10px 14px;border-radius:10px;margin-bottom:14px}
 .banner.red{background:#fadbd8;border-color:#f1948a}
 .scroll{overflow-x:auto}
@@ -59,7 +59,15 @@ label{display:block;font-size:13px;color:var(--mut);margin-bottom:3px}
 .hbar{height:8px;background:#f3e3cf;border-radius:4px;overflow:hidden}.hbar i{display:block;height:100%;background:var(--g)}
 #print{display:none}
 @media print{#app,#toast,#modal{display:none!important}#print{display:block}body{background:#fff}}
-@media(max-width:820px){#app{flex-direction:column}#nav{width:auto;height:auto;position:static;display:flex;flex-wrap:wrap}#nav .brand,#nav .biz{width:100%}#nav .sep{display:none}main{padding:12px}}
+.mtop,.tabbar{display:none}
+@media(max-width:820px){#app{flex-direction:column}#nav{width:auto;height:auto;position:sticky;top:0;z-index:7;padding:0;overflow:visible;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+#nav .mtop{display:flex;align-items:center;gap:10px;padding:8px 12px;min-height:52px}#nav .mtop .mb{background:none;border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:8px;font-size:20px;line-height:1;padding:6px 10px;cursor:pointer}#nav .mtop .mt{font-weight:700;color:var(--y);font-size:17px;white-space:nowrap}#nav .mtop .pg{flex:1;min-width:0;font-size:13px;color:#cfe5dc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#nav .nlinks{display:none}body.navopen #nav .nlinks{display:block;position:fixed;top:52px;left:0;right:0;bottom:0;overflow:auto;background:linear-gradient(180deg,#0b3b37 0%,#0f4f47 60%,#1d5e3a 100%);padding:8px 12px 90px;z-index:8}body.navopen{overflow:hidden}
+#nav .nlinks a{padding:11px 10px;font-size:16px}
+#nav .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;background:#0b3b37;padding:4px 2px calc(4px + env(safe-area-inset-bottom));z-index:9;box-shadow:0 -2px 8px rgba(0,0,0,.2)}
+#nav .tabbar a{flex:1;flex-direction:column;gap:1px;font-size:11px;padding:5px 2px;text-align:center;justify-content:center}#nav .tabbar a span{font-size:20px}#nav .tabbar a.on{background:rgba(255,255,255,.14)}
+main{padding:12px 12px 86px}.grid2{grid-template-columns:1fr}.f{grid-template-columns:1fr 1fr}h1{font-size:21px}.mbox{padding:12px}#toast{bottom:76px!important}}
+@media(max-width:480px){.f{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}}
 .inv{font:11px/1.35 Arial,Helvetica,sans-serif;color:#000}
 .inv table{border-collapse:collapse;width:100%}
 .inv td,.inv th{border:1px solid #000;padding:3px 5px;background:none;color:#000;font-size:10.5px}
@@ -246,9 +254,10 @@ function writeOff(id){const b=byId(S.batches,id);const q=stock().b[id]||0;if(q<=
 /* ---------- navigation ---------- */
 const PAGES=[['dash','🏠','Dashboard'],['sales','🧾','Sales invoices'],['orders','📋','Orders / backlog'],['purchases','🛒','Purchases'],['production','🏭','Production'],['returns','↩️','Returns'],['payments','💰','Payments & dues'],['bank','🏦','Bank statement'],['expenses','💸','Expenses (OpEx/CapEx)'],0,['stock','📦','Stock & batches'],['alerts','🔔','Alerts'],['demand','⚖️','Demand vs supply'],['reports','📊','GST & reports'],['profit','📈','Profit & break-even'],['audit','📝','Change log'],0,['items','🍬','Products'],['customers','👥','Customers'],['suppliers','🚚','Suppliers (goods)'],['vendors','🧰','Vendors (services)'],['workers','👷','Workers'],['payroll','💵','Payroll (salaries)'],['parties','🔎','Party analysis'],0,['settings','⚙️','Settings & backup']];
 let PAGE='dash',D=null,TAB={};
-function go(p){PAGE=p;D=null;render();window.scrollTo(0,0)}
-function nav(){const n=alerts().filter(a=>a.lvl!=='grey').length;document.getElementById('nav').innerHTML=`${S.settings.logo?`<div style="background:#fff;border-radius:8px;padding:6px;margin:2px 6px 8px"><img src="${S.settings.logo}" alt="logo" style="display:block;max-width:100%;max-height:60px;margin:auto"></div>`:''}<div class="brand">🫚 GingerBooks</div><div class="biz">${esc(S.settings.name||'Set up your business')}</div>${syncPill()}`+(GM.on?`<a onclick="guestOut()" style="font-size:13px"><span>👁</span>Guest · Sign out</a>`:'')+(!GM.on&&lkOn()&&LK.cur?`<a class="${PAGE==='account'?'on':''}" onclick="go('account')" style="font-size:13px" title="My password and log out"><span>👤</span>${esc(LK.cur.user)} · My account</a>`:'')+
- PAGES.filter(p=>!p||(p[0]!=='settings'||isAdmin())&&(p[0]!=='payroll'||isAdmin()||GM.on)).map(p=>p?`<a class="${PAGE===p[0]?'on':''}" onclick="go('${p[0]}')"><span>${p[1]}</span>${p[2]}${p[0]==='alerts'&&n?`<span class="badge">${n}</span>`:''}</a>`:'<div class="sep"></div>').join('')}
+function go(p){PAGE=p;D=null;document.body.classList.remove('navopen');render();window.scrollTo(0,0)}
+function navT(){document.body.classList.toggle('navopen')}
+function nav(){const n=alerts().filter(a=>a.lvl!=='grey').length;const cur=PAGES.find(p=>p&&p[0]===PAGE);const TB=[['dash','🏠','Home'],['sales','🧾','Sales'],['production','🏭','Production'],['payments','💰','Payments']];document.getElementById('nav').innerHTML=`<div class="mtop"><button class="mb" onclick="navT()" aria-label="Menu">☰</button><span class="mt">🫚 GingerBooks</span><span class="pg">${cur?esc(cur[2]):''}</span>${n?`<a onclick="go('alerts')" style="padding:4px">🔔<span class="badge">${n}</span></a>`:''}</div><div class="nlinks">${INSTALL?'<a onclick="installApp()" style="background:var(--y);color:#0b3b37;font-weight:700;margin-bottom:8px"><span>📲</span>Install app on this device</a>':''}${S.settings.logo?`<div style="background:#fff;border-radius:8px;padding:6px;margin:2px 6px 8px"><img src="${S.settings.logo}" alt="logo" style="display:block;max-width:100%;max-height:60px;margin:auto"></div>`:''}<div class="brand">🫚 GingerBooks</div><div class="biz">${esc(S.settings.name||'Set up your business')}</div>${syncPill()}`+(GM.on?`<a onclick="guestOut()" style="font-size:13px"><span>👁</span>Guest · Sign out</a>`:'')+(!GM.on&&lkOn()&&LK.cur?`<a class="${PAGE==='account'?'on':''}" onclick="go('account')" style="font-size:13px" title="My password and log out"><span>👤</span>${esc(LK.cur.user)} · My account</a>`:'')+
+ PAGES.filter(p=>!p||(p[0]!=='settings'||isAdmin())&&(p[0]!=='payroll'||isAdmin()||GM.on)).map(p=>p?`<a class="${PAGE===p[0]?'on':''}" onclick="go('${p[0]}')"><span>${p[1]}</span>${p[2]}${p[0]==='alerts'&&n?`<span class="badge">${n}</span>`:''}</a>`:'<div class="sep"></div>').join('')+`</div><div class="tabbar">${TB.map(t=>`<a class="${PAGE===t[0]?'on':''}" onclick="go('${t[0]}')"><span>${t[1]}</span>${t[2]}</a>`).join('')}<a onclick="navT()"><span>☰</span>More</a></div>`}
 function render(){STK=null;if(GM.screen&&!GM.on){document.getElementById('nav').style.display='none';document.getElementById('main').innerHTML=guestHTML();return}if(GM.on&&D){D=null;toast('View-only guest access: you cannot add or change entries.')}if(GM.on&&(PAGE==='settings'||PAGE==='account'))PAGE='dash';if(LK.cur&&!isAdmin()&&PAGE==='settings')PAGE='dash';if(!GM.on&&(LK.locked||LK.chg)){document.getElementById('nav').style.display='none';document.getElementById('main').innerHTML=lockHTML();return}document.getElementById('nav').style.display='';nav();document.getElementById('main').innerHTML=(GM.on?guestBanner():'')+(R[PAGE]||R.dash)()}
 const R={};
 const head=(t,btns)=>`<div class="row" style="margin-bottom:10px"><h1 style="margin:0">${t}</h1><span class="sp"></span>${btns||''}</div>`;
@@ -1257,6 +1266,9 @@ function loadSample(){if((S.sales.length||S.purchases.length)&&!confirm('Sample 
 
 /* ================= START ================= */
 window.addEventListener('error',e=>toast('Error: '+e.message,6000));
+let INSTALL=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();INSTALL=e;try{nav()}catch(x){}});
+function installApp(){if(INSTALL){INSTALL.prompt();INSTALL.userChoice.then(()=>{INSTALL=null;nav()})}}
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 (async function start(){if(gSess()){S=blank();GM.screen=false;document.getElementById('main').innerHTML='Loading guest view…';await guestLoad();setInterval(()=>{if(GM.on)guestLoad()},600000);return}let raw=null;try{raw=await idbGet('state')}catch(e){}if(!raw)raw=localStorage.getItem(DBNAME);S=raw?Object.assign(blank(),JSON.parse(raw)):blank();S.settings=Object.assign(blank().settings,S.settings);
  try{FH=await idbGet('fh')||null;if(FH&&(await FH.queryPermission({mode:'readwrite'}))!=='granted')AUTO_NEEDS=true}catch(e){FH=null}
  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});

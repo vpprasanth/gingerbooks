@@ -89,6 +89,11 @@
 <p>You can type your own category name if none of these fit. Mark each expense <b>Fixed</b> (same every month, e.g. rent and salaries) or <b>Variable</b> (rises with sales, e.g. labels and transport). The break-even figure depends on this split.</p>
 <div class="box">Labels, pouches and jars that you buy in bulk and want to count are better added as <b>Packing</b> products and bought through Purchases. The app then deducts them in Production and includes them in product cost.</div>
 
+<h2>Use it on a phone like an app</h2>
+<p>Open <b>https://vpprasanth.github.io/gingerbooks/</b> on the phone. The menu sits behind the <b>☰</b> button, and the bar at the bottom jumps to Home, Sales, Production and Payments.</p>
+<ul><li><b>Android (Chrome):</b> tap ☰ → <i>Install app on this device</i>, or Chrome's ⋮ menu → <i>Add to Home screen</i> / <i>Install app</i>.</li>
+<li><b>iPhone (Safari):</b> tap the Share button → <i>Add to Home Screen</i>.</li></ul>
+<p>The GingerBooks icon then opens full-screen like any other app, and it still opens without internet. The first time on a new phone, sign in to the business's cloud account in Settings → Cloud sync so the phone gets the books.</p>
 <h2>5a. Payroll, past records and the change log</h2>
 <p><b>Salary history.</b> In <b>Workers → Edit</b>, fill in the date of joining (and leaving, if any) and the <b>Pay history</b>: one line for each time the pay changed, with the date it started. For example: from 01-03-2020 ₹12,000 per month, then from 01-04-2024 ₹14,000 per month. If you just change the wage in the form later, the app asks from which date the new pay applies and adds the line for you.</p>
 <p><b>Payroll page, month by month.</b> The app works out each worker's pay for the month:</p>
@@ -102,4 +107,22 @@
 <p><b>Change log.</b> Every edit, cancellation, salary payment, past-salary run and back-dated entry is listed with who did it, when, what changed (old → new) and the reason. Entries in the log cannot be changed or deleted. Guests (auditors) can see and download it. Payroll is visible to Admins and guests, not to Staff users.</p>
 <h2>6. Bank statement</h2>
 <ol><li>In net banking, download the statement as <b>Excel (.xlsx)</b> or <b>CSV</b>. Save it in <code>C:\GingerCan\Bank statements</code>. If the bank gives an old <b>.xls</b> file, open it in Excel and use <i>Save As → Excel Workbook (.xlsx)</i>.</li>
-<li>Bank statement → <i>Import statement</i>. Check that the columns are mapped correctly, then cli
+<li>Bank statement → <i>Import statement</i>. Check that the columns are mapped correctly, then click <i>Import</i>.</li>
+<li>Money in is matched to the UPI, cheque and NEFT payments you recorded. Where there is no match, the app suggests an invoice of the same amount, or a customer whose name appears in the narration.</li>
+<li>For money out, click <i>Save as expense</i>. The category is guessed from the narration (TNEB → Electricity, DTDC → Courier, and so on).</li></ol>
+<p>Linking directly to the bank account is not possible in a free tool. In India that requires RBI's licensed Account Aggregator network. Importing the statement takes about a minute a week. Importing the same file twice is safe because duplicates are skipped.</p>
+
+<h2>7. Reading the reports</h2>
+<ul><li><b>Dashboard:</b> today's and this month's sales; a period table (today, week, month, quarter, year) with like-for-like comparisons; target progress; payment mix; trend chart; fast movers with 🔥 spikes; top suppliers and customers; returns.</li>
+<li><b>Alerts:</b> negative stock, empty (zero) batches, expired and expiring stock, low stock, items sold below cost, dead stock, overdue payments, cheques not cleared, overdue orders, backup due.</li>
+<li><b>Demand vs supply:</b> pending orders against good stock, and how much to make or buy now.</li>
+<li><b>GST &amp; reports:</b> pick the month. You get GSTR-1 tables (B2B, B2C large and small, credit notes, HSN summary, documents issued) and a GSTR-3B summary (output tax, input credit, cash payable). There are also sales, purchase and returns registers and stock/expiry reports. Every table has an <b>Excel (CSV)</b> button. Give these to your accountant; they are working summaries, so check them against the GST portal before filing.</li>
+<li><b>Profit &amp; break-even:</b> a profit &amp; loss statement; the break-even sales per month and your margin of safety; contribution by product; and a what-if calculator (price, cost per unit, fixed cost) with a chart.</li>
+<li><b>Party analysis:</b> customers grouped by activity (Active, Slowing, At risk, Lost), share of sales, margin, returns, dues; suppliers by share, return %, and raw-material price movement; vendors by spending.</li></ul>
+
+<h2>8. Rules the app follows</h2>
+<ul><li>Invoice numbers run per financial year, for example INV/2026-27/0001. A saved invoice cannot be edited. Cancel it and make a new one. The cancelled number is still reported in GSTR-1 “documents issued”, as GST rules require.</li>
+<li>If you bill more than you have in stock, the app warns you but lets you save. The item then shows in Alerts as negative stock until you enter the missing purchase or production.</li>
+<li>Expired batches are never picked automatically for sale.</li></ul>
+<p style="color:#5b6e64;font-size:13px">GingerBooks · works offline in Chrome or Edge · data stays on this computer.</p>
+</body></html>
