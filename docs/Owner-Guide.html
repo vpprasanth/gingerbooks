@@ -120,6 +120,14 @@
 <h2>Suppliers and the goods they supply</h2>
 <p>In <b>Suppliers → Edit</b>, list the raw materials and packing that each supplier sends, with the usual price. These are the same items as in Products, so stock and production cost stay in one place. If a material is new, create it right there.</p>
 <p>On <b>Purchases → New purchase</b>, choose the supplier first. The item list then shows that supplier's goods first, marked ★, with the usual price filled in. Other raw materials and packing follow below. To buy finished goods for resale, switch <i>Items shown</i> to "All products". Each saved purchase updates the supplier's usual price and adds any new material to their list.</p>
+<h2>Types of items: materials, packing, stationery and more</h2>
+<p>Every item in <b>Products</b> has a <b>Type</b>: Finished (what you sell), Raw material, Packing, Consumables / stationery, or Other. An Admin can add more types, such as Cleaning supplies or Spare parts, by choosing <i>＋ Add a new type…</i> in the Type box.</p>
+<ul>
+<li><b>Raw material and Packing</b> are direct production materials. They can be picked in production runs, and their cost goes into the cost of each batch.</li>
+<li><b>Consumables, stationery and other types</b> are kept in stock like any other item, so you can see how much is left. They count as <b>overhead</b> and are not part of batch cost. When some is used up, go to <b>Stock → Stock correction</b> and choose the reason <i>Used up (office / overhead)</i>. The value then shows in Profit &amp; loss under "Consumables &amp; stationery used", not as wastage.</li>
+<li>To change this for one item, set its <b>Cost head</b>. For example, set gloves or cooking gas to <i>Processing</i> and they can be used in production runs. Set <i>Overhead</i> to keep a raw material out of production.</li>
+</ul>
+<p>Suppliers can supply any of these types. On a new purchase the list is grouped by type, with the supplier's own goods first.</p>
 <h2>5c. Production cost: summary, detail and what-if</h2>
 <p><b>Production → Cost analysis</b> shows three views:</p>
 <ul><li>The cost per unit made for each product: materials, labour, power, fuel and other costs.</li>
