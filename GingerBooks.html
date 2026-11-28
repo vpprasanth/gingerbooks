@@ -32,6 +32,7 @@ table{width:100%;border-collapse:collapse}
 th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 th{font-size:12.5px;color:var(--mut);font-weight:600;background:var(--soft)}
 td.n,th.n{text-align:right;white-space:nowrap}
+.saved-tick{display:inline-block;margin-left:6px;color:#1b7f3b;font-size:12.5px;font-weight:600;transition:opacity .4s}input.just-saved,select.just-saved,textarea.just-saved{border-color:#1b7f3b!important;box-shadow:0 0 0 2px rgba(27,127,59,.18)}
 #main table:not(.lines) th,#main table:not(.lines) td{padding:6px 7px}#main table:not(.lines) td{font-size:13.5px}#main table:not(.lines) .btn.s{padding:3px 8px;font-size:12.5px;margin:1px}#main td.nw,#main th.nw{white-space:nowrap}
 table.tight th,table.tight td{padding:6px 7px}table.tight td{font-size:13.5px}table.tight td:nth-child(1),table.tight td:nth-child(2),table.tight th{white-space:nowrap}table.tight .nw{white-space:nowrap}table.tight td:last-child{white-space:nowrap;text-align:right}table.tight .btn.s{padding:3px 8px;font-size:12.5px;margin:1px}table.tight td.who{min-width:150px}
 .btn{display:inline-block;border:1px solid var(--g);background:var(--g);color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px;margin:2px;font-family:inherit}
@@ -643,7 +644,7 @@ R.settings=()=>{const s=S.settings;const f=(k,l,t)=>`<div><label>${l}</label>${t
  <div class="f">${f('address','Address')}${f('bank','Bank details (name, A/c, IFSC, UPI)')}</div><div class="f">${f('terms','Terms printed on invoice')}</div>
  <div class="f">${f('expiryWarnDays','Warn before expiry (days)','number')}${f('b2clLimit','B2C large invoice limit (₹)','number')}${f('backupDays','Remind to back up every (days)','number')}${f('monthTarget','Monthly sales target (₹, with GST)','number')}</div>
  <div><label>Company logo (printed on invoices)</label><div class="row">${s.logo?`<img src="${s.logo}" alt="logo" style="max-height:56px;max-width:220px;border:1px solid var(--line);border-radius:6px;padding:4px;background:#fff">`:'<span class="mut">No logo</span>'}<label class="btn s o" style="margin:2px">Upload logo<input type="file" accept="image/*" style="display:none" onchange="setLogo(this.files[0])"></label>${s.logo?'<button class="btn s o" onclick="S.settings.logo=\'\';commit()">Remove</button>':''}</div></div>
- <div class="mut" style="font-size:13px">Changes save automatically.</div></div>
+ <div class="row" style="align-items:center;gap:10px"><button class="btn s" onclick="if(document.activeElement)document.activeElement.blur();toast('All changes saved ✓')">Save changes</button><span class="mut" style="font-size:13px">Each box also saves by itself when you press Enter or click outside it. A green <b style="color:#1b7f3b">✓ Saved</b> appears beside it.</span></div></div>
 ${invNoSection()}${loginSection()}${guestSection()}${syncSection()}${archiveSection()}
  <div class="card"><h2>Backup (important)</h2><p>Your data is stored only inside this browser on this computer. Clearing browser data or changing computers will lose it unless you keep a backup file.</p>
  <div class="row"><button class="btn" onclick="backupNow()">⬇ Download backup now</button><label class="btn o" style="margin:2px">⬆ Restore from backup<input type="file" accept=".json" style="display:none" onchange="restore(this.files[0])"></label><span class="mut">Last download: ${lb}</span></div>
@@ -1504,6 +1505,13 @@ function compactTables(){const m=document.getElementById('main');if(!m)return;fo
  if(td.querySelector('input,select,textarea'))continue;
  if(/^\d{2}-\d{2}-\d{4}$/.test(t)||t.length<=26&&/^[A-Za-z0-9]+([\/-][A-Za-z0-9]+)+$/.test(t))td.classList.add('nw')}}
 {const _r=render;render=function(){const x=_r.apply(this,arguments);try{compactTables()}catch(e){}return x}}
+/* auto-saved fields: show a clear "Saved" sign next to the box */
+const AUTOSAVE_RE=/persist\(|commit\(|lk(Email|Full|Rename|Role)\(/;
+function flashSaved(el){const lab=el.closest('div')&&el.closest('div').querySelector('label');el.classList.add('just-saved');let t=null;
+ if(lab){t=lab.querySelector('.saved-tick');if(!t){t=document.createElement('span');t.className='saved-tick';lab.appendChild(t)}t.textContent='✓ Saved';t.style.opacity=1}
+ clearTimeout(el._svT);el._svT=setTimeout(()=>{el.classList.remove('just-saved');if(t)t.style.opacity=0},2500);toast('Saved ✓',1500)}
+document.addEventListener('change',e=>{const el=e.target;if(!el||!/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)||el.type==='file')return;const h=el.getAttribute('onchange')||'';if(!AUTOSAVE_RE.test(h))return;
+ setTimeout(()=>{if(document.body.contains(el))flashSaved(el);else toast('Saved ✓',1500)},0)});
 </script>
 </body>
 </html>
